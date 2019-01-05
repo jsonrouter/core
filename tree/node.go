@@ -12,6 +12,18 @@ import	(
 		"github.com/jsonrouter/validation"
 		)
 
+func NewNode() *Node {
+	return &Node{
+		Config: &config.Config{},
+		Headers: map[string]string{},
+		Routes:	map[string]*Node{},
+		Methods: map[string]*Handler{},
+		RequestParams: map[string]interface{}{},
+		Modules: []*Module{},
+		Validations: []*validation.Config{},
+	}
+}
+
 type Node struct {
 	Config *config.Config
 	Parent *Node
@@ -30,20 +42,13 @@ type Node struct {
 }
 
 func (node *Node) new(path string) *Node {
-
-	n := &Node{
-		Parent: node,
-		Config: node.Config,
-		RequestParams: map[string]interface{}{},
-		Routes: map[string]*Node{},
-		Methods: map[string]*Handler{},
-		Modules: node.Modules,
-		// inherited properties
-		Path: path,
-		Security: node.Security,
-		Validations: node.Validations,
-	}
-
+	n := NewNode()
+	n.Parent = node
+	n.Config = node.Config
+	n.Modules = node.Modules
+	n.Path = path
+	n.Security = node.Security
+	n.Validations = node.Validations
 	return n
 }
 

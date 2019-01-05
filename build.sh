@@ -16,3 +16,12 @@ echo "BUILDING 'openapi'"
 
 echo "BUILDING 'core'"
 go build || exit 10
+
+echo "BUILDING 'standard'"
+(cd ../platforms/standard && go build) || exit 10
+
+echo "BUILDING 'appengine'"
+(cd ../platforms/appengine && go build) || exit 10
+
+echo "BUILDING 'fasthttp'"
+(cd ../platforms/fasthttp && go build) || exit 10
