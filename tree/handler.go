@@ -28,7 +28,9 @@ type Handler struct {
 	responseSchema interface{}
 	payloadSchema []interface{}
 	patchSchema []interface{}
-	spec interface{}
+	spec struct {
+		addedBodyDefinition bool
+	}
 	sync.RWMutex
 }
 
@@ -56,29 +58,6 @@ func (handler *Handler) DetectContentType(req http.Request, filePath string) *ht
 	}
 
 	return nil
-}
-
-func (handler *Handler) ApiUrl() string {
-
-	var name string
-
-	parts := strings.Split(handler.Node.FullPath(), "/")
-
-	for _, part := range parts {
-
-		if len(part) == 0 { continue }
-
-		if string(part[0]) == ":" {
-
-			part = "'+" + part[1:] + "+'"
-
-		}
-
-		name += "/" + part
-
-	}
-
-	return "'" + name + "'"
 }
 
 // Describes the function via the spec JSON

@@ -32,10 +32,14 @@ func (handler *Handler) updateSpecParams(required bool, payload validation.Paylo
 
 		path := spec.Paths[handler.Path(spec.BasePath)]
 		pathMethod := path[strings.ToLower(handler.Method)]
-		ref := fmt.Sprintf(
-			"#/definitions/%s_%s",
+		ref := handler.Path(spec.BasePath)
+		ref = strings.Replace(ref, "/", "-", -1)
+		ref = strings.Replace(ref, "{", "", -1)
+		ref = strings.Replace(ref, "}", "", -1)
+		ref = fmt.Sprintf(
+			"#/definitions/%s-%s",
 			handler.Method,
-			strings.Replace(handler.Path(spec.BasePath), "/", "-", -1),
+			ref,
 		)
 
 		if spec.Definitions[ref] == nil {
@@ -49,20 +53,23 @@ func (handler *Handler) updateSpecParams(required bool, payload validation.Paylo
 			handler.updateSpecParam(required, spec.Definitions[ref], k, v)
 		}
 
-		// only create the definition if it has contents
-		if len(spec.Definitions[ref].Properties) > 0 {
-			pathMethod.Parameters = append(
-				pathMethod.Parameters,
-				&openapiv2.Parameter{
-//					Required: true,
-					Name: "body",
-					In: "body",
-					Description: handler.Descr,
-					Schema: &openapiv2.Schema{
-						Ref: ref,
+		// only create the definition ONCE if it has contents
+		if handler.spec.addedBodyDefinition {
+			if len(spec.Definitions[ref].Properties) > 0 {
+				pathMethod.Parameters = append(
+					pathMethod.Parameters,
+					&openapiv2.Parameter{
+	//					Required: true,
+						Name: "body",
+						In: "body",
+						Description: handler.Descr,
+						Schema: &openapiv2.Schema{
+							Ref: ref,
+						},
 					},
-				},
-			)
+				)
+			}
+			handler.spec.addedBodyDefinition = true
 		}
 
 	default: panic("INVALID SPEC TYPE")
@@ -88,9 +95,9 @@ func (handler *Handler) updateSpecParam(required bool, def interface{}, key stri
 		param.Maximum = pointerFloat64(cfg.Max)
 		param.Default = cfg.DefaultValue
 		param.Format = cfg.Type
-		param.Required = required
+//		param.Required = required
 
-		if param.Required == "true" {
+		if required == true {
 			definition.Required = append(
 				definition.Required,
 				key,
@@ -134,6 +141,7 @@ func (handler * Handler) updateParameters() {
 			maxLength := int64(cfg.Max)
 			param.MinLength = &minLength
 			param.MaxLength = &maxLength
+			param.Required = true
 
 			pathMethod.Parameters = append(pathMethod.Parameters, param)
 		}

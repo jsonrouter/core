@@ -52,7 +52,7 @@ type Parameter struct {
 	// options: header, formData, query, path
 	In string `json:"in,omitempty"`
 	Description string `json:"description,omitempty"`
-	Required interface{} `json:"required,omitempty"`
+	Required bool `json:"required,omitempty"`
 	// if body
 	Schema *Schema `json:"schema,omitempty"`
 	// else all of the below
