@@ -1,11 +1,12 @@
-package config
+package tree
 
 import 	(
 	"sync"
 	//
 	"github.com/jsonrouter/logging"
-	openapitwo "github.com/jsonrouter/core/openapi/v2"
-	openapithree "github.com/jsonrouter/core/openapi/v3"
+	"github.com/jsonrouter/core/http"
+	openapiv2 "github.com/jsonrouter/core/openapi/v2"
+	openapiv3 "github.com/jsonrouter/core/openapi/v3"
 )
 
 type Config struct {
@@ -18,12 +19,16 @@ type Config struct {
 	sync.RWMutex
 }
 
-func (config *Config) SpecV2() *openapitwo.APISpec {
-	return config.Spec.(*openapitwo.APISpec)
+func (config *Config) SpecV2() *openapiv2.Spec {
+	return config.Spec.(*openapiv2.Spec)
 }
 
-func (config *Config) SpecV3() *openapithree.APISpec {
-	return config.Spec.(*openapithree.APISpec)
+func (config *Config) SpecV3() *openapiv3.Spec {
+	return config.Spec.(*openapiv3.Spec)
+}
+
+func (config *Config) ServeSpec(req http.Request) *http.Status {
+	return req.Respond(config.Spec)
 }
 
 func (config *Config) NoCache() {

@@ -1,6 +1,6 @@
-package openapi
+package openapiv3
 
-type APISpec struct {
+type Spec struct {
 	OpenAPI string `json:"openapi"`
 	Info *Info `json:"info"`
 	Host string `json:"host"`

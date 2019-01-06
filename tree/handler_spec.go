@@ -37,7 +37,7 @@ func (handler *Handler) Spec() *HandlerSpec {
 		ResponseSchema:			handler.responseSchema,
 		File:					handler.File,
 		RouteParams:			routeParams,
-		Description:			handler.Description,
+		Description:			handler.Descr,
 	}
 
 	for _, schema := range handler.payloadSchema {

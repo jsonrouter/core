@@ -1,4 +1,4 @@
-package core
+package main
 
 import (
 	"fmt"
@@ -7,11 +7,10 @@ import (
 	"encoding/json"
 	//
 	"github.com/jsonrouter/core/http"
-	"github.com/jsonrouter/core/http/validation"
-	"github.com/golangdaddy/tarantula/log/testing"
-	"github.com/golangdaddy/tarantula/router/common"
-	"github.com/golangdaddy/tarantula/router/common/openapi"
-	"github.com/golangdaddy/tarantula/router/standard"
+	"github.com/jsonrouter/validation"
+	"github.com/jsonrouter/logging/testing"
+	"github.com/jsonrouter/core/openapi/v2"
+	"github.com/jsonrouter/platforms/standard"
 )
 
 const (
@@ -30,21 +29,25 @@ type TestObject struct {
 
 func TestMain(t *testing.T) {
 
-	logClient := logs.NewClient().NewLogger()
-
-	s := openapi.NewSpec(CONST_SPEC_HOST, CONST_SPEC_TITLE)
+	s := openapiv2.NewV2(CONST_SPEC_HOST, CONST_SPEC_TITLE)
 	s.BasePath = CONST_SPEC_BASEPATH
 	s.Info.Contact.URL = CONST_SPEC_URL
 	s.Info.Contact.Email = CONST_SPEC_EMAIL
 	s.Info.License.URL = CONST_SPEC_URL
 
-	root, _ := router.NewRouter(logClient, s)
+	root, err := jsonrouter.New(
+		logs.NewClient().NewLogger(),
+		s,
+	)
+	if err != nil {
+		panic(err)
+	}
 
-	api := root.Add(CONST_SPEC_BASEPATH)
+	api := root.Add(CONST_SPEC_BASEPATH).Add("test")
 
 	api.GET(
 		dummyHandler,
-	).Describe(
+	).Description(
 		"This is a GET endpoint!",
 	).Response(
 		TestObject{},
@@ -52,11 +55,14 @@ func TestMain(t *testing.T) {
 
 	api.POST(
 		dummyHandler,
-	).Describe(
+	).Description(
 		"This is a POST endpoint!",
-	).Body(
-		&common.Payload{
+	).Required(
+		validation.Payload{
 			"hello": validation.String(10, 20).Description("The hellos!").Default("Helloy"),
+		},
+	).Optional(
+		validation.Payload{
 			"world": validation.Int().Description("The worlds!").Default(2),
 		},
 	).Response(
@@ -68,22 +74,31 @@ func TestMain(t *testing.T) {
 		"id",
 	)
 
+	root.Config.Log.DebugJSON(apiResource.Validations)
+
 		apiResource.GET(
 			dummyHandler,
-		).Describe(
+		).Description(
 			"Handles access to the resource",
 		).Response(
 			TestObject{},
 		)
 
 	req := http.NewMockRequest("", "")
-	spec := root.Config.BuildOpenAPISpec(req)
+	spec := root.Config.Spec.(*openapiv2.Spec)
+//	openapi.BuildV2(spec, root.Config.Handlers)
+
+	req.Log().DebugJSON(spec.Paths)
 
 	t.Run(
 		"Test the spec",
 		func (t *testing.T) {
 
-			if spec.Paths["/swagger.json"] == nil {
+			if spec.Paths["/openapi.spec.v2.json"] == nil {
+				t.Error(fmt.Errorf("SPEC HAS INVALID PATHS! %v", len(spec.Paths)))
+			}
+
+			if spec.Paths["/openapi.spec.v3.json"] == nil {
 				t.Error(fmt.Errorf("SPEC HAS INVALID PATHS! %v", len(spec.Paths)))
 			}
 
@@ -99,16 +114,17 @@ func TestMain(t *testing.T) {
 				t.Error(errors.New("SPEC HAS INVALID CONTACT URL!"))
 			}
 
-			if len(spec.Paths) != 3 {
+			if len(spec.Paths) != 4 {
 				t.Error(fmt.Errorf("SPEC HAS INVALID NUM OF PATHS! %v", len(spec.Paths)))
 			}
 
-			if spec.Paths["/resource/{id}"] == nil {
+			if spec.Paths["/test/resource/{id}"] == nil {
 				t.Error(fmt.Errorf("SPEC HAS INVALID PATHS! %v", len(spec.Paths)))
 			}
 
-			if len(spec.Paths["/resource/{id}"].GET.Parameters) != 1 {
-				t.Error(fmt.Errorf("SPEC HAS INVALID NUMBER OF PARAMETERS! %v", len(spec.Paths)))
+			pl := len(spec.Paths["/test/resource/{id}"]["get"].Parameters)
+			if pl != 1 {
+				t.Error(fmt.Errorf("SPEC HAS INVALID NUMBER OF PARAMETERS! %v", pl))
 			}
 
 			if len(spec.Definitions) != 1 {

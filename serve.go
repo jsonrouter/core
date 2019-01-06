@@ -29,7 +29,7 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 
 			// render the OpenAPI handler documentation
 			status = req.Respond(
-				openapi.BuildOpenAPISpec(req),
+				openapi.BuildOpenSpec(req),
 			)
 			status.Respond(req)
 			return

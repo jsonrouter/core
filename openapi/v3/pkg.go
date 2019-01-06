@@ -1,7 +1,7 @@
-package openapi
+package openapiv3
 
-func NewV3(host, serviceName string) *APISpec {
-	return &APISpec{
+func NewV3(host, serviceName string) *Spec {
+	return &Spec{
 		OpenAPI: "3.0.0",
 		Info: &Info{
 			Title: serviceName,

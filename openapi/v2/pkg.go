@@ -1,13 +1,13 @@
-package openapi
+package openapiv2
 
-func NewV2(host, serviceName string) *APISpec {
-	return &APISpec{
+func NewV2(host, serviceName string) *Spec {
+	return &Spec{
 		Swagger: "2.0",
 		Info: &Info{
 			Title: serviceName,
 		},
 		Host: host,
-		Paths: map[string]*Path{},
+		Paths: map[string]Path{},
 		Schemes: []string{"http"},
 		Consumes: []string{"application/json"},
 		Produces: []string{"application/json"},

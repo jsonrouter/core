@@ -1,6 +1,6 @@
-package openapi
+package openapiv2
 
-type APISpec struct {
+type Spec struct {
 	Swagger string `json:"swagger"`
 	Info *Info `json:"info"`
 	Host string `json:"host"`
@@ -8,7 +8,7 @@ type APISpec struct {
 	Schemes []string `json:"schemes"`
 	Consumes []string `json:"consumes"`
 	Produces []string `json:"produces"`
-	Paths map[string]*Path `json:"paths"`
+	Paths map[string]Path `json:"paths"`
 	Definitions map[string]*Definition `json:"definitions"`
 //	SecurityDefinitions map[string]*SecurityDefinition `json:"securityDefinitions,omitempty"`
 }
@@ -35,15 +35,7 @@ type Info struct {
 	} `json:"license"`
 }
 
-type Path struct {
-	GET *PathMethod `json:"get,omitempty"`
-	PUT *PathMethod `json:"put,omitempty"`
-	POST *PathMethod `json:"post,omitempty"`
-	PATCH *PathMethod `json:"patch,omitempty"`
-	DELETE *PathMethod `json:"delete,omitempty"`
-	HEAD *PathMethod `json:"head,omitempty"`
-	OPTIONS *PathMethod `json:"options,omitempty"`
-}
+type Path map[string]*PathMethod
 
 type PathMethod struct {
 	Description string `json:"description,omitempty"`

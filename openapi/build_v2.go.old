@@ -7,11 +7,11 @@ import (
 	//
 	"github.com/jsonrouter/validation"
 	"github.com/jsonrouter/core/tree"
-	"github.com/jsonrouter/core/openapi/v2"
+	openapi "github.com/jsonrouter/core/openapi/v2"
 )
 
 // Builds the handler documentation object.
-func BuildV2(spec *openapi.APISpec, handlerMap map[string]*tree.Handler) {
+func BuildV2(spec *openapi.Spec, handlerMap map[string]*tree.Handler) {
 
 	handlers := map[*tree.Handler]*tree.HandlerSpec{}
 

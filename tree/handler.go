@@ -5,7 +5,6 @@ import	(
 	"sync"
 	"path"
 	"mime"
-	"bytes"
 	"reflect"
 	"strings"
 	www "net/http"
@@ -13,25 +12,28 @@ import	(
 	"encoding/json"
 	//
 	"github.com/jsonrouter/core/http"
-	"github.com/jsonrouter/core/config"
 	"github.com/jsonrouter/validation"
 )
 
 type HandlerFunction func (req http.Request) *http.Status
 
 type Handler struct {
-	Config *config.Config
+	Config *Config
 	Node *Node
 	Method string
-	Description string
+	Descr string
 	Headers map[string]string
 	Function func (req http.Request) *http.Status
 	File *File
 	responseSchema interface{}
 	payloadSchema []interface{}
 	patchSchema []interface{}
-	clientJS *bytes.Buffer
+	spec interface{}
 	sync.RWMutex
+}
+
+func (handler *Handler) Path(removePrefix ...string) string {
+	return strings.Replace(handler.Node.FullPath(), removePrefix[0], "", 1)
 }
 
 func (handler *Handler) DetectContentType(req http.Request, filePath string) *http.Status {
@@ -80,22 +82,9 @@ func (handler *Handler) ApiUrl() string {
 }
 
 // Describes the function via the spec JSON
-func (handler *Handler) Describe(descr string) *Handler {
+func (handler *Handler) Description(descr string) *Handler {
 
-	handler.Description = descr
-
-	return handler
-}
-
-// Applies model which describes request payload
-func (handler *Handler) Body(objects ...*validation.Payload) *Handler {
-
-	for _, object := range objects {
-		handler.payloadSchema = append(
-			handler.payloadSchema,
-			object,
-		)
-	}
+	handler.Descr = descr
 
 	return handler
 }
@@ -130,17 +119,6 @@ func (handler *Handler) BodyIsArray() *Handler {
 	handler.payloadSchema = append(
 		handler.payloadSchema,
 		&validation.Array{},
-	)
-
-	return handler
-}
-
-// Applies model which describes request payload
-func (handler *Handler) OptionalBody(obj *validation.Optional) *Handler {
-
-	handler.payloadSchema = append(
-		handler.payloadSchema,
-		obj,
 	)
 
 	return handler

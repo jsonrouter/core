@@ -8,13 +8,14 @@ import	(
 		"strings"
 		//
 		"github.com/jsonrouter/core/http"
-		"github.com/jsonrouter/core/config"
 		"github.com/jsonrouter/validation"
+		"github.com/jsonrouter/core/openapi/v2"
+//		"github.com/jsonrouter/core/openapi/v3"
 		)
 
-func NewNode() *Node {
+func NewNode(config *Config) *Node {
 	return &Node{
-		Config: &config.Config{},
+		Config: config,
 		Headers: map[string]string{},
 		Routes:	map[string]*Node{},
 		Methods: map[string]*Handler{},
@@ -25,7 +26,7 @@ func NewNode() *Node {
 }
 
 type Node struct {
-	Config *config.Config
+	Config *Config
 	Parent *Node
 	Path string
 	Parameter *Node
@@ -38,13 +39,13 @@ type Node struct {
 	Security interface{}
 	Validation *validation.Config
 	Validations []*validation.Config
+	spec interface{}
 	sync.RWMutex
 }
 
 func (node *Node) new(path string) *Node {
-	n := NewNode()
+	n := NewNode(node.Config)
 	n.Parent = node
-	n.Config = node.Config
 	n.Modules = node.Modules
 	n.Path = path
 	n.Security = node.Security
@@ -58,18 +59,46 @@ func (node *Node) addHandler(method string, handler *Handler) {
 	handler.Config = node.Config
 	handler.Node = node
 
+	switch spec := node.Config.Spec.(type) {
+	case *openapiv2.Spec:
+
+		if spec.Paths == nil {
+			spec.Paths = make(map[string]openapiv2.Path)
+		}
+
+		pathMethod := &openapiv2.PathMethod{
+			Produces: []string{
+				"application/json",
+			},
+			Description: "Serves the OpenAPI spec JSON",
+			Responses: openapiv2.Responses{
+				Code200: &openapiv2.StatusCode{
+					Description: "Done OK",
+					Schema: openapiv2.StatusSchema{
+						Type: "object",
+					},
+				},
+			},
+		}
+
+		path := handler.Path(spec.BasePath)
+		fmt.Println(method, path)
+		if spec.Paths[path] == nil {
+			spec.Paths[path] = openapiv2.Path{}
+		}
+		spec.Paths[path][strings.ToLower(method)] = pathMethod
+		handler.spec = pathMethod
+
+		default:
+			panic("INVALID TYPE FOR HTTP METHOD SWITCH")
+
+	}
+
+	handler.updateParameters()
+
 	node.Lock()
 	defer node.Unlock()
 	node.Methods[method] = handler
-}
-
-// returns the base param map including node params
-func (node *Node) RequestParameters() map[string]interface{} {
-	m := map[string]interface{}{}
-	node.RLock()
-	defer node.RUnlock()
-	for k, v := range node.RequestParams { m[k] = v }
-	return m
 }
 
 // Returns the node's full path string
@@ -89,21 +118,15 @@ func (node *Node) Add(path string, pathKeys ...string) *Node {
 	)
 
 	node.RLock()
-
-		p := node.Routes[path]
-
+		existing := node.Routes[path]
 	node.RUnlock()
-
-	if existing := p; existing != nil {
+	if existing != nil {
 		return existing
 	}
 
 	n := node.new(path)
-
 	node.Lock()
-
 		node.Routes[path] = n
-
 	node.Unlock()
 
 	if len(pathKeys) > 0 {
