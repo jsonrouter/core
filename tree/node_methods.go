@@ -7,7 +7,7 @@ import (
 // Allows POST requests to the node's handler
 func (node *Node) HEAD(functions ...interface{}) *Handler {
 
-	handler := &Handler{}
+	handler := node.newHandler("HEAD")
 
 	if len(functions) > 0 { handler.Function = functions[0].(func(http.Request) *http.Status) }
 
@@ -19,7 +19,7 @@ func (node *Node) HEAD(functions ...interface{}) *Handler {
 // Allows GET requests to the node's handler
 func (node *Node) GET(functions ...interface{}) *Handler {
 
-	handler := &Handler{}
+	handler := node.newHandler("GET")
 
 	if len(functions) > 0 { handler.Function = functions[0].(func(http.Request) *http.Status) }
 
@@ -31,7 +31,7 @@ func (node *Node) GET(functions ...interface{}) *Handler {
 // Allows POST requests to the node's handler
 func (node *Node) POST(functions ...interface{}) *Handler {
 
-	handler := &Handler{}
+	handler := node.newHandler("POST")
 
 	if len(functions) > 0 { handler.Function = functions[0].(func(http.Request) *http.Status) }
 
@@ -43,7 +43,7 @@ func (node *Node) POST(functions ...interface{}) *Handler {
 // Allows PUT requests to the node's handler
 func (node *Node) PUT(functions ...interface{}) *Handler {
 
-	handler := &Handler{}
+	handler := node.newHandler("PUT")
 
 	if len(functions) > 0 { handler.Function = functions[0].(func(http.Request) *http.Status) }
 
@@ -55,7 +55,7 @@ func (node *Node) PUT(functions ...interface{}) *Handler {
 // Allows POST requests to the node's handler
 func (node *Node) DELETE(functions ...interface{}) *Handler {
 
-	handler := &Handler{}
+	handler := node.newHandler("DELETE")
 
 	if len(functions) > 0 { handler.Function = functions[0].(func(http.Request) *http.Status) }
 
@@ -67,7 +67,7 @@ func (node *Node) DELETE(functions ...interface{}) *Handler {
 // Allows POST requests to the node's handler
 func (node *Node) PATCH(functions ...interface{}) *Handler {
 
-	handler := &Handler{}
+	handler := node.newHandler("PATCH")
 
 	if len(functions) > 0 { handler.Function = functions[0].(func(http.Request) *http.Status) }
 

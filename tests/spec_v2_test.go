@@ -1,4 +1,4 @@
-package main
+package tests
 
 import (
 	"fmt"
@@ -6,30 +6,15 @@ import (
 	"testing"
 	"encoding/json"
 	//
-	"github.com/jsonrouter/core/http"
-	"github.com/jsonrouter/validation"
+//	"github.com/jsonrouter/core/http"
 	"github.com/jsonrouter/logging/testing"
 	"github.com/jsonrouter/core/openapi/v2"
 	"github.com/jsonrouter/platforms/standard"
 )
 
-const (
-	CONST_SPEC_HOST = "dummyhost"
-	CONST_SPEC_TITLE = "my title"
-	CONST_SPEC_URL = "https://example.com"
-	CONST_SPEC_EMAIL = "address@example.com"
-	CONST_SPEC_LICENSE = "MIT"
-	CONST_SPEC_BASEPATH = "/api"
-)
+func TestSpecV2(t *testing.T) {
 
-type TestObject struct {
-	Hello string
-	World int
-}
-
-func TestMain(t *testing.T) {
-
-	s := openapiv2.NewV2(CONST_SPEC_HOST, CONST_SPEC_TITLE)
+	s := openapiv2.New(CONST_SPEC_HOST, CONST_SPEC_TITLE)
 	s.BasePath = CONST_SPEC_BASEPATH
 	s.Info.Contact.URL = CONST_SPEC_URL
 	s.Info.Contact.Email = CONST_SPEC_EMAIL
@@ -43,52 +28,11 @@ func TestMain(t *testing.T) {
 		panic(err)
 	}
 
-	api := root.Add(CONST_SPEC_BASEPATH).Add("test")
+	// load the demo routing info
+	testTree(root.Node)
 
-	api.GET(
-		dummyHandler,
-	).Description(
-		"This is a GET endpoint!",
-	).Response(
-		TestObject{},
-	)
-
-	api.POST(
-		dummyHandler,
-	).Description(
-		"This is a POST endpoint!",
-	).Required(
-		validation.Payload{
-			"hello": validation.String(10, 20).Description("The hellos!").Default("Helloy"),
-		},
-	).Optional(
-		validation.Payload{
-			"world": validation.Int().Description("The worlds!").Default(2),
-		},
-	).Response(
-		TestObject{},
-	)
-
-	apiResource := api.Add("/resource").Param(
-		validation.String(1, 64).Description("The id of the user."),
-		"id",
-	)
-
-	root.Config.Log.DebugJSON(apiResource.Validations)
-
-		apiResource.GET(
-			dummyHandler,
-		).Description(
-			"Handles access to the resource",
-		).Response(
-			TestObject{},
-		)
-
-	req := http.NewMockRequest("", "")
+	//req := http.NewMockRequest("", "")
 	spec := root.Config.Spec.(*openapiv2.Spec)
-//	openapi.BuildV2(spec, root.Config.Handlers)
-
-	req.Log().DebugJSON(spec.Paths)
 
 	t.Run(
 		"Test the spec",
@@ -136,9 +80,4 @@ func TestMain(t *testing.T) {
 
 	b, _ := json.Marshal(spec)
 	fmt.Println(string(b))
-}
-
-func dummyHandler(req http.Request) *http.Status {
-
-	return nil
 }

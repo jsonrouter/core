@@ -6,7 +6,7 @@ import (
 	//
 	"github.com/jsonrouter/validation"
 	"github.com/jsonrouter/core/openapi/v2"
-//	"github.com/jsonrouter/core/openapi/v3"
+	"github.com/jsonrouter/core/openapi/v3"
 )
 
 // Applies model which describes required request payload fields
@@ -32,20 +32,48 @@ func (handler *Handler) updateSpecParams(required bool, payload validation.Paylo
 
 		path := spec.Paths[handler.Path(spec.BasePath)]
 		pathMethod := path[strings.ToLower(handler.Method)]
-		ref := handler.Path(spec.BasePath)
-		ref = strings.Replace(ref, "/", "-", -1)
-		ref = strings.Replace(ref, "{", "", -1)
-		ref = strings.Replace(ref, "}", "", -1)
-		ref = fmt.Sprintf(
-			"#/definitions/%s-%s",
-			handler.Method,
-			ref,
-		)
+		def := handler.Ref(spec.BasePath)
+		ref := fmt.Sprintf("#/definitions/%s", def)
 
-		if spec.Definitions[ref] == nil {
-			spec.Definitions[ref] = &openapiv2.Definition{
+		if spec.Definitions[def] == nil {
+			spec.Definitions[def] = &openapiv2.Definition{
 				Type: "object",
 				Properties: map[string]openapiv2.Parameter{},
+			}
+		}
+
+		for k, v := range payload {
+			handler.updateSpecParam(required, spec.Definitions[def], k, v)
+		}
+
+		// only create the definition ONCE if it has contents
+		if !handler.spec.addedBodyDefinition {
+			if len(spec.Definitions[def].Properties) > 0 {
+				pathMethod.Parameters = append(
+					pathMethod.Parameters,
+					&openapiv2.Parameter{
+						Name: "body",
+						In: "body",
+						Description: handler.Descr,
+						Schema: &openapiv2.Schema{
+							Ref: ref,
+						},
+					},
+				)
+			}
+			handler.spec.addedBodyDefinition = true
+		}
+
+	case *openapiv3.Spec:
+
+		path := spec.Paths[handler.Path(spec.BasePath)]
+		pathMethod := path[strings.ToLower(handler.Method)]
+		ref := handler.Ref(spec.BasePath)
+
+		if spec.Definitions[ref] == nil {
+			spec.Definitions[ref] = &openapiv3.Definition{
+				Type: "object",
+				Properties: map[string]openapiv3.Parameter{},
 			}
 		}
 
@@ -58,12 +86,11 @@ func (handler *Handler) updateSpecParams(required bool, payload validation.Paylo
 			if len(spec.Definitions[ref].Properties) > 0 {
 				pathMethod.Parameters = append(
 					pathMethod.Parameters,
-					&openapiv2.Parameter{
-	//					Required: true,
+					&openapiv3.Parameter{
 						Name: "body",
 						In: "body",
 						Description: handler.Descr,
-						Schema: &openapiv2.Schema{
+						Schema: &openapiv3.Schema{
 							Ref: ref,
 						},
 					},
@@ -95,6 +122,7 @@ func (handler *Handler) updateSpecParam(required bool, def interface{}, key stri
 		param.Maximum = pointerFloat64(cfg.Max)
 		param.Default = cfg.DefaultValue
 		param.Format = cfg.Type
+		param.Type = openapiv3.Type(cfg.Model)
 //		param.Required = required
 
 		if required == true {
@@ -104,15 +132,24 @@ func (handler *Handler) updateSpecParam(required bool, def interface{}, key stri
 			)
 		}
 
-		switch param.Format {
-		case "bool":
-			param.Type = "boolean"
-		case "string":
-			param.Type = "string"
-		case "int64", "int":
-			param.Type = "integer"
-		case "float32", "float64":
-			param.Type = "number"
+		definition.Properties[key] = param
+
+	case *openapiv3.Definition:
+
+		param := openapiv3.Parameter{}
+		param.Description = cfg.DescriptionValue
+		param.Minimum = pointerFloat64(cfg.Min)
+		param.Maximum = pointerFloat64(cfg.Max)
+		param.Default = cfg.DefaultValue
+		param.Format = cfg.Type
+		param.Type = openapiv3.Type(cfg.Model)
+//		param.Required = required
+
+		if required == true {
+			definition.Required = append(
+				definition.Required,
+				key,
+			)
 		}
 
 		definition.Properties[key] = param
@@ -145,5 +182,25 @@ func (handler * Handler) updateParameters() {
 
 			pathMethod.Parameters = append(pathMethod.Parameters, param)
 		}
+	case *openapiv3.Spec:
+
+		path := spec.Paths[handler.Path(spec.BasePath)]
+		pathMethod := path[strings.ToLower(handler.Method)]
+
+		for _, cfg := range handler.Node.Validations {
+			param := &openapiv3.Parameter{}
+			param.In = "path"
+			param.Name = cfg.Keys[0]
+			param.Description = cfg.DescriptionValue
+			param.Type = cfg.Type
+			minLength := int64(cfg.Min)
+			maxLength := int64(cfg.Max)
+			param.MinLength = &minLength
+			param.MaxLength = &maxLength
+			param.Required = true
+
+			pathMethod.Parameters = append(pathMethod.Parameters, param)
+		}
+		default: panic("INVALID SPEC TYPE")
 	}
 }

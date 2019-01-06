@@ -14,7 +14,7 @@ import	(
 func NewNode(config *Config) *Node {
 	return &Node{
 		Config: config,
-		Headers: map[string]string{},
+		Headers: map[string]interface{}{},
 		Routes:	map[string]*Node{},
 		Methods: map[string]*Handler{},
 		RequestParams: map[string]interface{}{},
@@ -28,7 +28,7 @@ type Node struct {
 	Parent *Node
 	Path string
 	Parameter *Node
-	Headers map[string]string
+	Headers map[string]interface{}
 	RequestParams map[string]interface{}
 	Routes map[string]*Node
 	Methods map[string]*Handler
@@ -48,7 +48,16 @@ func (node *Node) new(path string) *Node {
 	n.Path = path
 	n.Security = node.Security
 	n.Validations = node.Validations
+	// create a new map inheriting the values from the parant node
+	for k, v := range node.Headers {
+		n.Headers[k] = v
+	}
 	return n
+}
+
+func (node *Node) SetHeaders(headers map[string]interface{}) *Node {
+	node.Headers = headers
+	return node
 }
 
 // Returns the node's full path string

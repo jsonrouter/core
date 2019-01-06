@@ -1,6 +1,10 @@
 package openapiv2
 
-func NewV2(host, serviceName string) *Spec {
+import (
+	"reflect"
+)
+
+func New(host, serviceName string) *Spec {
 	return &Spec{
 		Swagger: "2.0",
 		Info: &Info{
@@ -14,4 +18,19 @@ func NewV2(host, serviceName string) *Spec {
 		Definitions: map[string]*Definition{},
 //		SecurityDefinitions: []*SecurityDefinition{},
 	}
+}
+
+func Type(x interface{}) string {
+	switch reflect.TypeOf(x).String() {
+	case "bool":
+		return "boolean"
+	case "string":
+		return "string"
+	case "int64", "int":
+		return "integer"
+	case "float32", "float64":
+		return "number"
+	}
+	panic("openapi: UNMAPPED TYPE")
+	return ""
 }

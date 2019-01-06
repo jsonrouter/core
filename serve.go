@@ -24,26 +24,7 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 	}
 
 	switch fullPath {
-/*
-		case "/swagger.json":
 
-			// render the OpenAPI handler documentation
-			status = req.Respond(
-				openapi.BuildOpenSpec(req),
-			)
-			status.Respond(req)
-			return
-
-		case "/_.json":
-
-			// render the handler documentation
-
-			status = req.Respond(
-				node.Config.BuildSpec(req),
-			)
-			status.Respond(req)
-			return
-*/
 		case "/robots.txt":
 
 			req.Write([]byte(ROBOTS_TXT))
@@ -84,10 +65,12 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 		req.HttpError("NO CONTROLLER FOUND AT " + next.FullPath(), 500)
 		return
 	}
+/*
 	// set CORS headers
 	for k, v := range handler.Headers {
 		req.SetHeader(k, v)
 	}
+*/
 	// return if preflight request
 	if req.Method() == "OPTIONS" { return }
 

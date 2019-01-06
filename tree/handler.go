@@ -17,12 +17,23 @@ import	(
 
 type HandlerFunction func (req http.Request) *http.Status
 
+func (node *Node) newHandler(method string) *Handler {
+	handler := &Handler{
+		Node: node,
+		Method: method,
+		Headers: map[string]interface{}{},
+	}
+	for k, v := range node.Headers {
+		handler.Headers[k] = v
+	}
+	return handler
+}
+
 type Handler struct {
-	Config *Config
 	Node *Node
 	Method string
 	Descr string
-	Headers map[string]string
+	Headers map[string]interface{}
 	Function func (req http.Request) *http.Status
 	File *File
 	responseSchema interface{}
@@ -36,6 +47,14 @@ type Handler struct {
 
 func (handler *Handler) Path(removePrefix ...string) string {
 	return strings.Replace(handler.Node.FullPath(), removePrefix[0], "", 1)
+}
+
+func (handler *Handler) Ref(basePath string) string {
+ 	return fmt.Sprintf(
+		"%s-%s",
+		handler.Path(basePath)[1:],
+		handler.Method,
+	)
 }
 
 func (handler *Handler) DetectContentType(req http.Request, filePath string) *http.Status {
