@@ -3,14 +3,34 @@ package openapiv3
 type Spec struct {
 	OpenAPI string `json:"openapi"`
 	Info *Info `json:"info"`
-	Host string `json:"host"`
-	BasePath string `json:"basePath"`
-	Schemes []string `json:"schemes"`
-	Consumes []string `json:"consumes"`
-	Produces []string `json:"produces"`
+	Servers []*Server
+	//Host string `json:"host"`
+	//BasePath string `json:"basePath"`
+	//Schemes []string `json:"schemes"`
+	//Consumes []string `json:"consumes"`
+	//Produces []string `json:"produces"`
 	Paths map[string]Path `json:"paths"`
-	Definitions map[string]*Definition `json:"definitions"`
+	//Definitions map[string]*Definition `json:"definitions"`
 	Components *Components `json:"components,omitempty"`
+	Security []*SecurityRequirementObject `json:"security"`
+	Tags []*TagObject `json:"tags"`
+	ExternalDocs ExternalDocumentationObject `json:"externalDocs"`
+}
+
+type ExternalDocumentationObject {
+	Description string `json:"description"`
+	Url string `json:"url"`
+
+}
+
+type TagObject {
+	Name string `json:"name"`
+	Description string `json:"description"`
+	ExternalDocs *ExternalDocumentationObject `json:"externalDocumentationObject"`
+}
+
+type SecurityRequirementObject {
+	SecurityRequirements map[string]string `json:"securityRequirements"`
 }
 
 type Components struct {
