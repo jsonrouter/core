@@ -5,9 +5,6 @@ echo "BUILDING 'http'"
 echo "BUILDING 'validation'"
 (cd ../validation && go build) || exit 10
 
-echo "BUILDING 'config'"
-(cd config && go build) || exit 10
-
 echo "BUILDING 'tree'"
 (cd tree && go build) || exit 10
 
