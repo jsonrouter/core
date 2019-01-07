@@ -17,19 +17,31 @@ type Spec struct {
 	ExternalDocs ExternalDocumentationObject `json:"externalDocs"`
 }
 
-type ExternalDocumentationObject {
+type Server struct {
+	Url string `json:"url"`
+	Description string `json:"description"`
+	Variables map[string]*ServerVariableObject `json:"variables"`
+}
+
+type ServerVariableObject struct {
+	Enum []string `json:"enum"`
+	Default string `json:"default"`
+	Description string `json:"description"`
+}
+
+type ExternalDocumentationObject struct {
 	Description string `json:"description"`
 	Url string `json:"url"`
 
 }
 
-type TagObject {
+type TagObject struct {
 	Name string `json:"name"`
 	Description string `json:"description"`
 	ExternalDocs *ExternalDocumentationObject `json:"externalDocumentationObject"`
 }
 
-type SecurityRequirementObject {
+type SecurityRequirementObject struct {
 	SecurityRequirements map[string]string `json:"securityRequirements"`
 }
 

@@ -10,15 +10,20 @@ func New(host, serviceName string) *Spec {
 		Info: &Info{
 			Title: serviceName,
 		},
-		Host: host,
+		Servers: []*Server{},
+		
+		//Host: host,
 		Paths: map[string]Path{},
-		Schemes: []string{"http"},
-		Consumes: []string{"application/json"},
-		Produces: []string{"application/json"},
-		Definitions: map[string]*Definition{},
+		//Schemes: []string{"http"},
+		//Consumes: []string{"application/json"},
+		//Produces: []string{"application/json"},
+		//Definitions: map[string]*Definition{},
 		Components: &Components{
 			SecuritySchemes: map[string]*SecuritySchemeObject{},
 		},
+		Security: []*SecurityRequirementObject{},
+		Tags: []*TagObject{},
+		ExternalDocs: ExternalDocumentationObject{},
 	}
 }
 
