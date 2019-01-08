@@ -19,11 +19,11 @@ func New(host, serviceName string) *Spec {
 		//Produces: []string{"application/json"},
 		//Definitions: map[string]*Definition{},
 		Components: &Components{
-			SecuritySchemes: map[string]*SecuritySchemeObject{},
+			SecuritySchemes: map[string]*SecurityScheme{},
 		},
-		Security: []*SecurityRequirementObject{},
-		Tags: []*TagObject{},
-		ExternalDocs: ExternalDocumentationObject{},
+		Security: []*SecurityRequirement{},
+		Tags: []*Tag{},
+		ExternalDocs: ExternalDocumentation{},
 	}
 }
 

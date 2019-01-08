@@ -68,22 +68,22 @@ func (handler *Handler) updateSpecParams(required bool, payload validation.Paylo
 
 		path := spec.Paths[handler.Node.FullPath()]
 		pathMethod := path[strings.ToLower(handler.Method)]
-		ref := handler.Ref(_)
+		ref := handler.Ref("")
 
-		if spec.Definitions[ref] == nil {
-			spec.Definitions[ref] = &openapiv3.Definition{
+		if spec.Components.RequestBodies[ref] == nil {
+			spec.Components.RequestBodies[ref] = &openapiv3.RequestBody{
 				Type: "object",
 				Properties: map[string]openapiv3.Parameter{},
 			}
 		}
 
 		for k, v := range payload {
-			handler.updateSpecParam(required, spec.Definitions[ref], k, v)
+			handler.updateSpecParam(required, spec.Components.BodyObjects[ref], k, v)
 		}
 
 		// only create the definition ONCE if it has contents
 		if !handler.spec.addedBodyDefinition {
-			if len(spec.Definitions[ref].Properties) > 0 {
+			if len(spec.Components.RequestBodies[ref].Content) > 0 {
 				pathMethod.Parameters = append(
 					pathMethod.Parameters,
 					&openapiv3.Parameter{
@@ -134,7 +134,7 @@ func (handler *Handler) updateSpecParam(required bool, def interface{}, key stri
 
 		definition.Properties[key] = param
 
-	case *openapiv3.Definition:
+	case *openapiv3.RequestBody:
 
 		param := openapiv3.Parameter{}
 		param.Description = cfg.DescriptionValue
