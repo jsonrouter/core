@@ -66,9 +66,9 @@ func (handler *Handler) updateSpecParams(required bool, payload validation.Paylo
 
 	case *openapiv3.Spec:
 
-		path := spec.Paths[handler.Path(spec.BasePath)]
+		path := spec.Paths[handler.Node.FullPath()]
 		pathMethod := path[strings.ToLower(handler.Method)]
-		ref := handler.Ref(spec.BasePath)
+		ref := handler.Ref(_)
 
 		if spec.Definitions[ref] == nil {
 			spec.Definitions[ref] = &openapiv3.Definition{
@@ -82,7 +82,7 @@ func (handler *Handler) updateSpecParams(required bool, payload validation.Paylo
 		}
 
 		// only create the definition ONCE if it has contents
-		if handler.spec.addedBodyDefinition {
+		if !handler.spec.addedBodyDefinition {
 			if len(spec.Definitions[ref].Properties) > 0 {
 				pathMethod.Parameters = append(
 					pathMethod.Parameters,
@@ -184,7 +184,7 @@ func (handler * Handler) updateParameters() {
 		}
 	case *openapiv3.Spec:
 
-		path := spec.Paths[handler.Path(spec.BasePath)]
+		path := spec.Paths[handler.Node.FullPath()]
 		pathMethod := path[strings.ToLower(handler.Method)]
 
 		for _, cfg := range handler.Node.Validations {
