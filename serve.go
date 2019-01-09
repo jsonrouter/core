@@ -1,15 +1,22 @@
 package core
 
 import (
-		"strings"
-		//
-		"github.com/jsonrouter/core/http"
-		"github.com/jsonrouter/core/tree"
-		)
+	"strings"
+	//
+	"github.com/jsonrouter/core/http"
+	"github.com/jsonrouter/core/tree"
+)
 
 const	(
-		ROBOTS_TXT = "User-agent: *\nDisallow: /api/"
-		)
+	ROBOTS_TXT = "User-agent: *\nDisallow: /api/"
+)
+
+type Router interface{
+  Serve(int)
+}
+
+type Headers map[string]string
+
 
 // main handler
 func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *http.Status) {
