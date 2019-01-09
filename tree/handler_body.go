@@ -106,6 +106,20 @@ func (handler *Handler) updateSpecParams(required bool, payload validation.Paylo
 
 func (handler *Handler) updateSpecParam(required bool, def interface{}, key string, cfg *validation.Config) {
 
+	switch v := handler.payloadSchema.(type) {
+		case nil:
+
+			m := map[string]interface{}{}
+			m[key] = cfg
+			handler.payloadSchema = m
+
+		case validation.Payload:
+
+			v[key] = cfg
+			handler.payloadSchema = v
+
+	}
+
 	pointerFloat64 := func(f float64) *float64 {
 		if f == 0 {
 			return nil

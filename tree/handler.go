@@ -37,7 +37,7 @@ type Handler struct {
 	Function func (req http.Request) *http.Status
 	File *File
 	responseSchema interface{}
-	payloadSchema []interface{}
+	payloadSchema interface{}
 	patchSchema []interface{}
 	spec struct {
 		addedBodyDefinition bool
@@ -87,41 +87,6 @@ func (handler *Handler) Description(descr string) *Handler {
 	return handler
 }
 
-// Applies model which describes request payload
-func (handler *Handler) Patch(objects ...*validation.Patch) *Handler {
-
-	for _, object := range objects {
-		handler.patchSchema = append(
-			handler.payloadSchema,
-			object,
-		)
-	}
-
-	return handler
-}
-
-// Applies model which describes request payload
-func (handler *Handler) BodyIsObject() *Handler {
-
-	handler.payloadSchema = append(
-		handler.payloadSchema,
-		&validation.Object{},
-	)
-
-	return handler
-}
-
-// Applies model which describes request payload
-func (handler *Handler) BodyIsArray() *Handler {
-
-	handler.payloadSchema = append(
-		handler.payloadSchema,
-		&validation.Array{},
-	)
-
-	return handler
-}
-
 // Applys model which describes response schema
 func (handler *Handler) Response(schema ...interface{}) *Handler {
 
@@ -141,102 +106,99 @@ func (handler *Handler) ReadPayload(req http.Request) *http.Status {
 	bodyParams := map[string]interface{}{}
 	statusMessages := map[string]*http.Status{}
 
-	for _, schema := range handler.payloadSchema {
 
-		switch params := schema.(type) {
+	switch params := handler.payloadSchema.(type) {
 
-			case nil:
-
-				// do nothing
-
-			case []byte:
+		case nil:
 
 			// do nothing
 
-			case map[string]interface{}:
+		case []byte:
 
-				if !readBodyObject {
-					status := req.ReadBodyObject(); if status != nil { return status }
-					readBodyObject = true
-				}
+		// do nothing
 
-			case []interface{}:
+		case map[string]interface{}:
 
-				if !readBodyObject {
-					status := req.ReadBodyObject(); if status != nil { return status }
-					readBodyObject = true
-				}
+			if !readBodyObject {
+				status := req.ReadBodyObject(); if status != nil { return status }
+				readBodyObject = true
+			}
 
-			case validation.Array:
+		case []interface{}:
 
-				if !readBodyObject {
-					status := req.ReadBodyObject(); if status != nil { return status }
-					readBodyObject = true
-				}
+			if !readBodyObject {
+				status := req.ReadBodyObject(); if status != nil { return status }
+				readBodyObject = true
+			}
 
-				array := params
+		case validation.Array:
 
-				switch len(array) {
+			if !readBodyObject {
+				status := req.ReadBodyObject(); if status != nil { return status }
+				readBodyObject = true
+			}
 
-					case 1:
+			array := params
 
-						return req.Respond(400, "INVALID TYPE FOR ARRAY PAYLOAD SCHEMA, EXPECTS 0 OR 2 ARGS (*ValidationConfig, paramKey)")
+			switch len(array) {
 
-					case 2:
+				case 1:
 
-						vc, ok := array[0].(*validation.Config); if !ok { return req.Respond(500, "INVALID ARRAY PAYLOAD SCHEMA VALIDATION CONFIG") }
+					return req.Respond(400, "INVALID TYPE FOR ARRAY PAYLOAD SCHEMA, EXPECTS 0 OR 2 ARGS (*ValidationConfig, paramKey)")
 
-						paramKey, ok := array[1].(string); if !ok { return req.Respond(500, "INVALID ARRAY PAYLOAD SCHEMA PARAM KEY") }
+				case 2:
 
-						status, array := vc.BodyFunction(req, req.BodyArray()); if status != nil {
+					vc, ok := array[0].(*validation.Config); if !ok { return req.Respond(500, "INVALID ARRAY PAYLOAD SCHEMA VALIDATION CONFIG") }
 
-							req.Log().DebugJSON(req.BodyArray())
-							//return req.Respond(400, "INVALID TYPE FOR ARRAY PAYLOAD ITEM, EXPECTED: "+vc.Type())
+					paramKey, ok := array[1].(string); if !ok { return req.Respond(500, "INVALID ARRAY PAYLOAD SCHEMA PARAM KEY") }
 
-							return status
-						}
+					status, array := vc.BodyFunction(req, req.BodyArray()); if status != nil {
 
-						req.SetParam(paramKey, array)
+						req.Log().DebugJSON(req.BodyArray())
+						//return req.Respond(400, "INVALID TYPE FOR ARRAY PAYLOAD ITEM, EXPECTED: "+vc.Type())
 
-				}
-
-			case validation.Object:
-
-				if !readBodyObject {
-					status := req.ReadBodyObject(); if status != nil { return status }
-					readBodyObject = true
-				}
-
-			case validation.Payload:
-
-				if !readBodyObject {
-					status := req.ReadBodyObject(); if status != nil { return status }
-					readBodyObject = true
-				}
-
-				object := params
-
-				for key, vc := range object {
-					paramCount++
-					status, x := vc.BodyFunction(
-						req,
-						req.Body(key),
-					)
-					if status != nil {
-						// dont leak data to logs
-						//status.Value = req.Body(key)
-						status.Message = fmt.Sprintf("%s KEY '%s'", status.MessageString(), key)
-						statusMessages[key] = status
-					} else {
-						bodyParams[key] = x
+						return status
 					}
+
+					req.SetParam(paramKey, array)
+
+			}
+
+		case validation.Object:
+
+			if !readBodyObject {
+				status := req.ReadBodyObject(); if status != nil { return status }
+				readBodyObject = true
+			}
+
+		case validation.Payload:
+
+			if !readBodyObject {
+				status := req.ReadBodyObject(); if status != nil { return status }
+				readBodyObject = true
+			}
+
+			object := params
+
+			for key, vc := range object {
+				paramCount++
+				status, x := vc.BodyFunction(
+					req,
+					req.Body(key),
+				)
+				if status != nil {
+					// dont leak data to logs
+					//status.Value = req.Body(key)
+					status.Message = fmt.Sprintf("%s KEY '%s'", status.MessageString(), key)
+					statusMessages[key] = status
+				} else {
+					bodyParams[key] = x
 				}
+			}
 
-			default:
+		default:
 
-				return req.Respond(500, "INVALID OPTIONAL PAYLOAD SCHEMA CONFIG TYPE: "+reflect.TypeOf(params).String())
-
-		}
+			return req.Respond(500, "INVALID OPTIONAL PAYLOAD SCHEMA CONFIG TYPE: "+reflect.TypeOf(params).String())
 
 	}
 
