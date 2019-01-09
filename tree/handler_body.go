@@ -119,9 +119,6 @@ func (handler *Handler) updateSpecParam(required bool, def interface{}, key stri
 			v[key] = cfg
 			handler.payloadSchema = v
 
-			fmt.Println("adding", key, handler.payloadSchema)
-
-
 		default:
 
 			panic("INVALID PAYLOAD TYPE: "+reflect.TypeOf(handler.payloadSchema).String())
