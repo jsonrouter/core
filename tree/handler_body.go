@@ -120,6 +120,8 @@ func (handler *Handler) updateSpecParam(required bool, def interface{}, key stri
 
 	}
 
+	fmt.Println(handler.payloadSchema)
+
 	pointerFloat64 := func(f float64) *float64 {
 		if f == 0 {
 			return nil
@@ -196,6 +198,7 @@ func (handler * Handler) updateParameters() {
 
 			pathMethod.Parameters = append(pathMethod.Parameters, param)
 		}
+
 	case *openapiv3.Spec:
 
 		path := spec.Paths[handler.Path(spec.BasePath)]
