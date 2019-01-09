@@ -33,6 +33,6 @@ func Type(x interface{}) string {
 	case "float32", "float64":
 		return "number"
 	}
-	panic("openapi: UNMAPPED TYPE")
+	panic("openapi: UNMAPPED TYPE "+reflect.TypeOf(x).String())
 	return ""
 }
