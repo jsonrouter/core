@@ -2,6 +2,7 @@ package tree
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 	//
 	"github.com/jsonrouter/validation"
@@ -123,7 +124,7 @@ func (handler *Handler) updateSpecParam(required bool, def interface{}, key stri
 
 		default:
 
-			panic("INVALID PAYLOAD TYPE")
+			panic("INVALID PAYLOAD TYPE: "+reflect.TypeOf(handler.payloadSchema).String())
 
 	}
 
