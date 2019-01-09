@@ -167,14 +167,14 @@ func (handler *Handler) ReadPayload(req http.Request) *http.Status {
 					readBodyObject = true
 				}
 
-			case *validation.Array:
+			case validation.Array:
 
 				if !readBodyObject {
 					status := req.ReadBodyObject(); if status != nil { return status }
 					readBodyObject = true
 				}
 
-				array := *params
+				array := params
 
 				switch len(array) {
 
@@ -200,21 +200,21 @@ func (handler *Handler) ReadPayload(req http.Request) *http.Status {
 
 				}
 
-			case *validation.Object:
+			case validation.Object:
 
 				if !readBodyObject {
 					status := req.ReadBodyObject(); if status != nil { return status }
 					readBodyObject = true
 				}
 
-			case *validation.Payload:
+			case validation.Payload:
 
 				if !readBodyObject {
 					status := req.ReadBodyObject(); if status != nil { return status }
 					readBodyObject = true
 				}
 
-				object := *params
+				object := params
 
 				for key, vc := range object {
 					paramCount++
@@ -228,26 +228,6 @@ func (handler *Handler) ReadPayload(req http.Request) *http.Status {
 						status.Message = fmt.Sprintf("%s KEY '%s'", status.MessageString(), key)
 						statusMessages[key] = status
 					} else {
-						bodyParams[key] = x
-					}
-				}
-
-			case *validation.Optional:
-
-				if !readBodyObject {
-					status := req.ReadBodyObject(); if status != nil { return status }
-					readBodyObject = true
-				}
-
-				object := *params
-
-				for key, vc := range object {
-					optionalCount++
-					status, x := vc.BodyFunction(
-						req,
-						req.Body(key),
-					)
-					if status == nil {
 						bodyParams[key] = x
 					}
 				}
