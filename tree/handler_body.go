@@ -125,8 +125,6 @@ func (handler *Handler) updateSpecParam(required bool, def interface{}, key stri
 
 	}
 
-	fmt.Println(key, handler.payloadSchema)
-
 	pointerFloat64 := func(f float64) *float64 {
 		if f == 0 {
 			return nil
