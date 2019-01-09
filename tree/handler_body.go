@@ -110,7 +110,7 @@ func (handler *Handler) updateSpecParam(required bool, def interface{}, key stri
 	switch v := handler.payloadSchema.(type) {
 		case nil:
 
-			m := map[string]interface{}{}
+			m := map[string]*validation.Config{}
 			m[key] = cfg
 			handler.payloadSchema = m
 
