@@ -32,7 +32,7 @@ func Type(x interface{}) string {
 		return "number"
 	case "map[string]interface {}":
 		return "object"
-	case "[]string {}":
+	case "[]string":
 		return "array"
 	case "[]interface {}":
 		return "array"
