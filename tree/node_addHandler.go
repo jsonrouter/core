@@ -17,6 +17,7 @@ func (node *Node) addHandler(method string, handler *Handler) {
 		}
 
 		pathMethod := &openapiv2.PathMethod{
+			OperationID: "?",
 			Produces: []string{
 				"application/json",
 			},
