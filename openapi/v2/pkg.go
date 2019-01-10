@@ -16,7 +16,7 @@ func New(host, serviceName string) *Spec {
 		Consumes: []string{"application/json"},
 		Produces: []string{"application/json"},
 		Definitions: map[string]*Definition{},
-//		SecurityDefinitions: []*SecurityDefinition{},
+		SecurityDefinitions: map[string]*SecurityDefinition{},
 	}
 }
 
