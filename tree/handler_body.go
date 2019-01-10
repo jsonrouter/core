@@ -65,15 +65,16 @@ func (handler *Handler) updateSpecParams(required bool, payload validation.Paylo
 		}
 
 	case *openapiv3.Spec:
-
+/*
 		path := spec.Paths[handler.Node.FullPath()]
 		pathMethod := path[strings.ToLower(handler.Method)]
-		ref := handler.Ref("")
+		ref := fmt.Sprintf("#/components/requestBodies/%s", pathMethod)
 
-		if spec.Components.RequestBodies[ref] == nil {
-			spec.Components.RequestBodies[ref] = &openapiv3.RequestBody{
-				Type: "object",
-				Properties: map[string]openapiv3.Parameter{},
+		if spec.Components.RequestBodies[path] == nil {
+			spec.Components.RequestBodies[path] = &openapiv3.RequestBody{
+				Required: required,
+				Description: handler.Descr,
+				Content: map[string]*MediaType{},
 			}
 		}
 
@@ -98,7 +99,7 @@ func (handler *Handler) updateSpecParams(required bool, payload validation.Paylo
 			}
 			handler.spec.addedBodyDefinition = true
 		}
-
+*/
 	default: panic("INVALID SPEC TYPE")
 	}
 
@@ -135,25 +136,19 @@ func (handler *Handler) updateSpecParam(required bool, def interface{}, key stri
 		definition.Properties[key] = param
 
 	case *openapiv3.RequestBody:
-
+/*
 		param := openapiv3.Parameter{}
+
 		param.Description = cfg.DescriptionValue
-		param.Minimum = pointerFloat64(cfg.Min)
-		param.Maximum = pointerFloat64(cfg.Max)
+		//param.Minimum = pointerFloat64(cfg.Min)
+		//param.Maximum = pointerFloat64(cfg.Max)
 		param.Default = cfg.DefaultValue
 		param.Format = cfg.Type
 		param.Type = openapiv3.Type(cfg.Model)
-//		param.Required = required
+		param.Required = required
 
-		if required == true {
-			definition.Required = append(
-				definition.Required,
-				key,
-			)
-		}
-
-		definition.Properties[key] = param
-
+		definition.Content[key] = param
+*/
 	default: panic("INVALID SPEC TYPE")
 	}
 
@@ -185,21 +180,23 @@ func (handler * Handler) updateParameters() {
 	case *openapiv3.Spec:
 
 		path := spec.Paths[handler.Node.FullPath()]
-		pathMethod := path[strings.ToLower(handler.Method)]
+		operation := path[strings.ToLower(handler.Method)]
 
 		for _, cfg := range handler.Node.Validations {
 			param := &openapiv3.Parameter{}
 			param.In = "path"
 			param.Name = cfg.Keys[0]
 			param.Description = cfg.DescriptionValue
-			param.Type = cfg.Type
-			minLength := int64(cfg.Min)
-			maxLength := int64(cfg.Max)
-			param.MinLength = &minLength
-			param.MaxLength = &maxLength
+			minLength := int(cfg.Min)
+			maxLength := int(cfg.Max)
+			param.Schema = &openapiv3.Schema{}
+			param.Schema.Type = cfg.Type
+			param.Schema.Minimum = minLength
+			param.Schema.Maximum = maxLength
+			
 			param.Required = true
 
-			pathMethod.Parameters = append(pathMethod.Parameters, param)
+			operation.Parameters = append(operation.Parameters, param)
 		}
 		default: panic("INVALID SPEC TYPE")
 	}

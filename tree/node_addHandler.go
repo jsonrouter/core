@@ -53,26 +53,18 @@ func (node *Node) addHandler(method string, handler *Handler) {
 			spec.Paths = make(map[string]openapiv3.Path)
 		}
 
-		pathMethod := &openapiv3.PathMethod{
-			Produces: []string{
-				"application/json",
-			},
+		operation := &openapiv3.Operation{
+			Summary: "",
 			Description: "Serves the OpenAPI spec JSON",
-			Responses: openapiv3.Responses{
-				Code200: &openapiv3.StatusCode{
-					Description: "Done OK",
-					Schema: openapiv3.StatusSchema{
-						Type: "object",
-					},
-				},
-			},
+			Parameters: []*openapiv3.Parameter{},
+			Responses:  make(map[int]*openapiv3.Response),
 		}
 
-		path := handler.Path(spec.BasePath)
+		path := handler.Path("")
 		if spec.Paths[path] == nil {
 			spec.Paths[path] = openapiv3.Path{}
 		}
-		spec.Paths[path][strings.ToLower(method)] = pathMethod
+		spec.Paths[path][strings.ToLower(method)] = operation
 
 		default:
 			panic("INVALID TYPE FOR HTTP METHOD SWITCH")

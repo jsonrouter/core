@@ -7,7 +7,7 @@ import (
 type Spec struct {
 	OpenAPI string `json:"openapi"`
 	Info *Info `json:"info"`
-	Servers []*Server
+	Servers []*Server `json:"servers"`
 	//Host string `json:"host"`
 	//BasePath string `json:"basePath"`
 	//Schemes []string `json:"schemes"`
@@ -64,7 +64,7 @@ type Components struct {
 	Parameters map[string]*Parameter `json:"parameters"`
 	Examples map[string]*Example `json:"examples"`
 	SecuritySchemes map[string]*SecurityScheme `json:"securitySchemes"`
-	RequestBodies map[string]*RequestBody `json:"RequestBodies"`
+	RequestBodies map[string]*RequestBody `json:"requestBodies"`
 	Headers map[string]*Header `json:"headers"`
 	Links map[string]*Link `json:"links"`
 	Callbacks map[string]*CallBack `json:"callbacks"`
@@ -96,8 +96,7 @@ type OAuthFlow struct {
 	Scopes map[string]string `json:"scopes"`
 }
 
-type Path map[string]*PathItem
-
+type Path map[string]*Operation
 
 type PathItem struct {
 	Ref *PathItem `json:"$ref"`
@@ -116,18 +115,18 @@ type PathItem struct {
 }
 
 type Operation struct {
-	Tags []string
-	Summary string
-	Description string
-	ExternalDocs *ExternalDocumentation
-	OperationId string
-	Parameters []*Parameter
-	RequestBody *RequestBody 
-	Responses *Responses
-	Callbacks map[string]*CallBack
-	Depreciated bool
-	Security []SecurityRequirement 
-	Servers []ServerVariable
+	Tags []string `json:"tags,omitempty"`
+	Summary string `json:"summary,omitempty"`
+	Description string `json:"description,omitempty"`
+	ExternalDocs *ExternalDocumentation `json:"externalDocs,omitempty"`
+	OperationId string `json:"operationId,omitempty"`
+	Parameters []*Parameter `json:"parameters"`
+	RequestBody *RequestBody `json:"requestBody,omitempty"`
+	Responses map[int]*Response `json:"responses"`
+	Callbacks map[string]*CallBack `json:"callbacks,omitempty"`
+	Depreciated bool `json:"depreciated,omitempty"`
+	Security []SecurityRequirement `json:"security,omitempty"`
+	Servers []ServerVariable `json:"servers,omitempty"`
 
 }
 
@@ -143,11 +142,13 @@ type Encoding struct {
 type Example struct {
 	Summary string `json:"summary"`
 	Description string `json:"description"`
-	Value interface{} `json:"value"`
+	Value map[string]interface{} `json:"value"`
  	ExternalValue string `json:"externalValue"`
 }
 
+
 type RequestBody struct {
+	Ref string `json:"$ref"`
 	Description string `json:"description"`
 	Content map[string]*MediaType `json:"contents"`
 	Required bool `json:"required"`
@@ -191,6 +192,13 @@ type Parameter struct {
 	Required bool `json:"required,omitempty"`
 	Depreciated bool `json:"depreciated,omitempty"`
 	AllowEmptyvalue bool `json:"allowEmptyValue,omitempty"`
+
+	Style string `json:"style, omitempty"`
+	Explode bool `json:"example"` 
+	AllowReserved bool `json:"allowReserved"`
+	Schema *Schema `json:"schema"`
+	Example *Example `json:"example"`
+	Examples map[string]*Example `json:"examples"`
 
 }
 
@@ -238,9 +246,8 @@ type StatusCode struct {
 }
 
 // Comments refer to the line above the comment :)
-type Responses struct {
-	Responses map[int]*Response  `json:"responses"`
-}
+type Responses map[int]*Response  
+
 
 type Response struct {
 	Description string `json:"description"`
@@ -267,32 +274,34 @@ type Link struct {
 }
 
 type Schema struct {
-	Title string `json:"title"`
-	MultipleOf interface{} `json:"multipleOf"`
-	Maximum interface{} `json:"maximum"`
-	ExclusiveMaximum bool `json:"exclusiveMaximum"`
-	Minimum interface{} `json:"minimum"`
-	ExclusiveMinimum bool `json:"exclusiveMinimum"`
-	MaxLength interface{} `json:"maxLength"`
-	MinLength interface{} `json:"minLength"`
-	Pattern string `json:"pattern"`
-	MaxItems int64 `json:"maxItems"`
-	MinItems int64 `json:"minItems"`
-	UniqueItems interface{} `json:"uniqueItems"`
-	MaxProperties int `json:"maxProperties"`
-	MinProperties int `json:"minProperties"`
-	Required bool `json:"required"`
-	Enum interface{} `json:"enum"`
+	Title string `json:"title,omitempty"`
+	MultipleOf int `json:"multipleOf,omitempty"`
+	Maximum int `json:"maximum,omitempty"`
+	ExclusiveMaximum bool `json:"exclusiveMaximum,omitempty"`
+	Minimum int `json:"minimum,omitempty"`
+	ExclusiveMinimum bool `json:"exclusiveMinimum,omitempty"`
+	MaxLength int `json:"maxLength,omitempty"`
+	MinLength int `json:"minLength,omitempty"`
+	Pattern string `json:"pattern,omitempty"`
+	MaxItems int `json:"maxItems,omitempty"`
+	MinItems int `json:"minItems,omitempty"`
+	UniqueItems interface{} `json:"uniqueItems,omitempty"`
+	MaxProperties int `json:"maxProperties,omitempty"`
+	MinProperties int `json:"minProperties,omitempty"`
+	Required bool `json:"required,omitempty"`
+	Enum []string `json:"enum,omitempty"`
 
-	Type string `json:"type"`
-	AllOf *Schema `json:"allOf"`
-	OneOf *Schema `json:"oneOf"`
- 	Not *Schema `json:"not"`
-	Items *Schema `json:"items"`
-	Properties *Schema `json:"properties"`
-	AdditionalProperties *Schema `json:"AdditionalProperties"`
-	Description string `json:"description"`
-	Format string `json:"format"`
-	Default interface{} `json:"default"`
+	Type string `json:"type,omitempty"`
+	AllOf []*Schema `json:"allOf,omitempty"`
+	OneOf []*Schema `json:"oneOf,omitempty"`
+ 	Not *Schema `json:"not,omitempty"`
+	Items *Schema `json:"items,omitempty"`
+	Properties map[string]*Schema `json:"properties,omitempty"`
+	AdditionalProperties *Schema `json:"AdditionalProperties,omitempty"`
+	Description string `json:"description,omitempty"`
+	Format string `json:"format,omitempty"`
+	Default string `json:"default,omitempty"`
 
 }
+
+
