@@ -13,6 +13,8 @@ import	(
 	//
 	"github.com/jsonrouter/core/http"
 	"github.com/jsonrouter/validation"
+	"github.com/jsonrouter/core/openapi/v2"
+	"github.com/jsonrouter/core/openapi/v3"
 )
 
 type HandlerFunction func (req http.Request) *http.Status
@@ -60,6 +62,12 @@ func (handler *Handler) Ref(basePath string) string {
 
 func (handler *Handler) Security(sec SecurityModule) {
 	handler.securityModule = sec
+	switch spec := handler.Node.Config.Spec.(type) {
+	case openapiv2.Spec:
+		spec.SecurityDefinitions[sec.Name()] = sec.DefinitionV2()
+	case openapiv3.Spec:
+		//spec.SecurityDefinitions[sec.Name()] = sec.DefinitionV3()
+	}
 }
 
 func (handler *Handler) DetectContentType(req http.Request, filePath string) *http.Status {

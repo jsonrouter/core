@@ -6,15 +6,19 @@ import (
 )
 
 type SecurityModule interface {
-	DefinitionV2()
-//	DefinitionV3()
+	Name() string
 	Validate()
+	DefinitionV2() *openapiv2.SecurityDefinition
+//	DefinitionV3() *openapiv3.SecurityDefinition
 }
 
 // API key implementation
 
 type Security_ApiKey struct {
+}
 
+func (apiKey *Security_ApiKey) Name() string {
+	return "apiKey"
 }
 
 func (apiKey *Security_ApiKey) Validate() {
