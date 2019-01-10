@@ -42,6 +42,7 @@ type Handler struct {
 	spec struct {
 		addedBodyDefinition bool
 	}
+	securityModule SecurityModule
 	sync.RWMutex
 }
 
@@ -55,6 +56,10 @@ func (handler *Handler) Ref(basePath string) string {
 		handler.Path(basePath),
 		handler.Method,
 	)
+}
+
+func (handler *Handler) Security(sec SecurityModule) {
+	handler.securityModule = sec
 }
 
 func (handler *Handler) DetectContentType(req http.Request, filePath string) *http.Status {

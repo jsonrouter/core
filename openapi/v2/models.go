@@ -10,15 +10,24 @@ type Spec struct {
 	Produces []string `json:"produces"`
 	Paths map[string]Path `json:"paths"`
 	Definitions map[string]*Definition `json:"definitions"`
-//	SecurityDefinitions map[string]*SecurityDefinition `json:"securityDefinitions,omitempty"`
+	SecurityDefinitions map[string]*SecurityDefinition `json:"securityDefinitions,omitempty"`
 }
-/*
+
+// WARNING
+// Operation does not require an API key
+// callers may invoke the method without specifying an associated API-consuming project.
+// To enable API key all the SecurityRequirement Objects (https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#security-requirement-object)
+// inside security definition must reference at least one SecurityDefinition of type : 'apiKey'.
+
 type SecurityDefinition struct {
 	Type string `json:"type"`
+	In string `json:"in"`
+	Name string `json:"name"`
 	Flow string `json:"flow,omitempty"`
 	TokenUrl string `json:"tokenUrl,omitempty"`
 }
-*/
+
+
 type Info struct {
 	Version string `json:"version"`
 	Title string `json:"title"`
