@@ -26,7 +26,7 @@ func (apiKey *Security_ApiKey) Validate() {
 
 func (apiKey *Security_ApiKey) DefinitionV2() *openapiv2.SecurityDefinition {
 	return &openapiv2.SecurityDefinition{
-		Type: "apikey",
+		Type: "apiKey",
 		Name: "apikey",
 		In: "header",
 	}
