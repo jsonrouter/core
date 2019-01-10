@@ -7,7 +7,7 @@ import (
 type Spec struct {
 	OpenAPI string `json:"openapi"`
 	Info *Info `json:"info"`
-	Servers []*Server `json:"servers"`
+	Servers []*Server `json:"servers,omitempty"`
 	//Host string `json:"host"`
 	//BasePath string `json:"basePath"`
 	//Schemes []string `json:"schemes"`
@@ -16,9 +16,9 @@ type Spec struct {
 	Paths map[string]Path `json:"paths"`
 	//Definitions map[string]*Definition `json:"definitions"`
 	Components *Components `json:"components,omitempty"`
-	Security []*SecurityRequirement `json:"security"`
-	Tags []*Tag `json:"tags"`
-	ExternalDocs ExternalDocumentation `json:"externalDocs"`
+	Security []*SecurityRequirement `json:"security,omitempty"`
+	Tags []*Tag `json:"tags,omitempty"`
+	ExternalDocs ExternalDocumentation `json:"externalDocs,omitempty"`
 }
 
 type Server struct {
@@ -59,15 +59,15 @@ type SecurityRequirement struct {
 }
 
 type Components struct {
-	Schemas map[string]*Schema `json:"schemas"`
-	Responses map[string]*Response `json:"responses"`
-	Parameters map[string]*Parameter `json:"parameters"`
-	Examples map[string]*Example `json:"examples"`
-	SecuritySchemes map[string]*SecurityScheme `json:"securitySchemes"`
-	RequestBodies map[string]*RequestBody `json:"requestBodies"`
-	Headers map[string]*Header `json:"headers"`
-	Links map[string]*Link `json:"links"`
-	Callbacks map[string]*CallBack `json:"callbacks"`
+	Schemas map[string]*Schema `json:"schemas,omitempty"`
+	Responses map[string]*Response `json:"responses,omitempty"`
+	Parameters map[string]*Parameter `json:"parameters,omitempty"`
+	Examples map[string]*Example `json:"examples,omitempty"`
+	SecuritySchemes map[string]*SecurityScheme `json:"securitySchemes,omitempty"`
+	RequestBodies map[string]*RequestBody `json:"requestBodies,omitempty"`
+	Headers map[string]*Header `json:"headers,omitempty"`
+	Links map[string]*Link `json:"links,omitempty"`
+	Callbacks map[string]*CallBack `json:"callbacks,omitempty"`
 }
 
 type SecurityScheme struct {
@@ -185,20 +185,20 @@ type Info struct {
 
 type Parameter struct {
 	// required 'fixed' fields
-	Name string `json:"name,omitempty"`
+	Name string `json:"name"`
 	// options: header, formData, query, path
-	In string `json:"in,omitempty"`
+	In string `json:"in"`
 	Description string `json:"description,omitempty"`
 	Required bool `json:"required,omitempty"`
 	Depreciated bool `json:"depreciated,omitempty"`
 	AllowEmptyvalue bool `json:"allowEmptyValue,omitempty"`
 
-	Style string `json:"style, omitempty"`
-	Explode bool `json:"example"` 
-	AllowReserved bool `json:"allowReserved"`
-	Schema *Schema `json:"schema"`
-	Example *Example `json:"example"`
-	Examples map[string]*Example `json:"examples"`
+	Style string `json:"style,omitempty"`
+	Explode bool `json:"example,omitempty"` 
+	AllowReserved bool `json:"allowReserved,omitempty"`
+	Schema *Schema `json:"schema,omitempty"`
+	Example *Example `json:"example,omitempty"`
+	Examples map[string]*Example `json:"examples,omitempty"`
 
 }
 
@@ -251,9 +251,9 @@ type Responses map[int]*Response
 
 type Response struct {
 	Description string `json:"description"`
-	Headers map[string]*Header `json:"headers"`
-	Content map[string]*MediaType `json:"content"`
-	Links map[string]*Link `json:"links"`
+	Headers map[string]*Header `json:"headers,omitempty"`
+	Content map[string]*MediaType `json:"content,omitempty"`
+	Links map[string]*Link `json:"links,omitempty"`
 }
 
 type MediaType struct {

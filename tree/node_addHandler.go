@@ -57,8 +57,20 @@ func (node *Node) addHandler(method string, handler *Handler) {
 			Summary: "",
 			Description: "Serves the OpenAPI spec JSON",
 			Parameters: []*openapiv3.Parameter{},
-			Responses:  make(map[int]*openapiv3.Response),
+			Responses:  map[int]*openapiv3.Response{
+				200: &openapiv3.Response{
+					Description: "OK!",
+				},
+				500: &openapiv3.Response{
+					Description: "Unknown Server Error",
+				},
+				400: &openapiv3.Response{
+ 					Description: "Bad Request",
+				},
+			},
 		}
+
+		
 
 		path := handler.Path("")
 		if spec.Paths[path] == nil {
