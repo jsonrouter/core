@@ -4,7 +4,7 @@ type Spec struct {
 	Swagger string `json:"swagger"`
 	Info *Info `json:"info"`
 	Host string `json:"host"`
-	BasePath string `json:"basePath"`
+	BasePath string `json:"basePath,omitempty"`
 	Schemes []string `json:"schemes"`
 	Consumes []string `json:"consumes"`
 	Produces []string `json:"produces"`
