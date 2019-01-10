@@ -63,10 +63,11 @@ func (handler *Handler) Ref(basePath string) string {
 func (handler *Handler) Security(sec SecurityModule) {
 	handler.securityModule = sec
 	switch spec := handler.Node.Config.Spec.(type) {
-	case openapiv2.Spec:
+	case *openapiv2.Spec:
 		spec.SecurityDefinitions[sec.Name()] = sec.DefinitionV2()
-	case openapiv3.Spec:
+	case *openapiv3.Spec:
 		//spec.SecurityDefinitions[sec.Name()] = sec.DefinitionV3()
+	default: panic("INVALID SWITCH VALUE")
 	}
 }
 
