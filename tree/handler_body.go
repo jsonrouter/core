@@ -142,6 +142,11 @@ func (handler *Handler) updateSpecParam(required bool, def interface{}, key stri
 		param.Default = cfg.DefaultValue
 		param.Format = cfg.Type
 		param.Type = openapiv3.Type(cfg.Model)
+		if param.Type == "array" {
+			param.Items = map[string]string{
+				"type": "string",
+			}
+		}
 //		param.Required = required
 
 		if required == true {
@@ -192,7 +197,7 @@ func (handler * Handler) updateParameters() {
 			param.In = "path"
 			param.Name = cfg.Keys[0]
 			param.Description = cfg.DescriptionValue
-			param.Type = cfg.Type
+			param.Type = openapiv2.Type(cfg.Type)
 			minLength := int64(cfg.Min)
 			maxLength := int64(cfg.Max)
 			param.MinLength = &minLength
