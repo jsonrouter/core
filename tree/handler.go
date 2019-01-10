@@ -60,7 +60,7 @@ func (handler *Handler) Ref(basePath string) string {
 	)
 }
 
-func (handler *Handler) Security(sec SecurityModule) {
+func (handler *Handler) Security(sec SecurityModule) *Handler {
 	handler.securityModule = sec
 	switch spec := handler.Node.Config.Spec.(type) {
 	case *openapiv2.Spec:
@@ -69,6 +69,8 @@ func (handler *Handler) Security(sec SecurityModule) {
 		//spec.SecurityDefinitions[sec.Name()] = sec.DefinitionV3()
 	default: panic("INVALID SWITCH VALUE")
 	}
+
+	return handler
 }
 
 func (handler *Handler) DetectContentType(req http.Request, filePath string) *http.Status {
