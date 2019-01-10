@@ -149,9 +149,9 @@ type Example struct {
 
 type RequestBody struct {
 	Ref string `json:"$ref"`
-	Description string `json:"description"`
-	Content map[string]*MediaType `json:"contents"`
-	Required bool `json:"required"`
+	Description string `json:"description,omitempty"`
+	Content map[string]*MediaType `json:"content"`
+	Required bool `json:"required,omitempty"`
 }
 
 type Header struct {
@@ -257,10 +257,10 @@ type Response struct {
 }
 
 type MediaType struct {
-	Schema  *Schema `json:"schema"`
-	Example interface{} `json:"example"`
-	Examples map[string]interface{} `json:"examples"`
-	Encoding map[string]*Encoding `json:"encoding"`
+	Schema  *Schema `json:"schema,omitempty"`
+	Example interface{} `json:"example,omitempty"`
+	Examples map[string]interface{} `json:"examples,omitempty"`
+	Encoding map[string]*Encoding `json:"encoding,omitempty"`
 }
 
 type Link struct {

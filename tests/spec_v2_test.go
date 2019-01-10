@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"errors"
 	"testing"
-//	"encoding/json"
+	"encoding/json"
 	//
 //	"github.com/jsonrouter/core/http"
 	"github.com/jsonrouter/logging/testing"
@@ -78,6 +78,6 @@ func TestSpecV2(t *testing.T) {
 		},
 	)
 
-	//b, _ := json.Marshal(spec)
-//	fmt.Println(string(b))
+	b, _ := json.Marshal(spec)
+	fmt.Println(string(b))
 }
