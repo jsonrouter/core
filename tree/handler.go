@@ -52,7 +52,7 @@ func (handler *Handler) Path(removePrefix ...string) string {
 func (handler *Handler) Ref(basePath string) string {
  	return fmt.Sprintf(
 		"%s-%s",
-		handler.Path(basePath)[1:],
+		handler.Path(basePath),
 		handler.Method,
 	)
 }
