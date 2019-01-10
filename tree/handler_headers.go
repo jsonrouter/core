@@ -4,7 +4,7 @@ import (
 	"strings"
 	//
 	"github.com/jsonrouter/core/openapi/v2"
-//	"github.com/jsonrouter/core/openapi/v3"
+	"github.com/jsonrouter/core/openapi/v3"
 )
 
 func (handler *Handler) SetHeaders(headers map[string]interface{}) *Handler {
@@ -34,6 +34,19 @@ func (handler *Handler) updateSpecHeaders() {
 				Default: v,
 			}
 		}
+
+	case *openapiv3.Spec:
+/*
+		path := spec.Paths[handler.Path("")]
+		operation := path[strings.ToLower(handler.Method)]
+
+		x := 200
+		for k, _ := range handler.Headers {
+			response := operation.Responses[x]
+			response.Headers[k] = &openapiv3.Header{
+				//In: openapiv3.Type(v),
+			}
+		}*/
 
 	}
 }
