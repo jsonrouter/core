@@ -130,6 +130,15 @@ type Operation struct {
 
 }
 
+func (self *Operation) Response(code int) *Response {
+	if self.Responses[code] == nil {
+		self.Responses[code] = &Response{
+			Headers: map[string]*Header{},
+		}
+	}
+	return self.Responses[code]
+}
+
 type Encoding struct {
 	ContentType string `json:"contentType"`
 	Headers map[string]*Header `json:"headers"`
@@ -161,6 +170,13 @@ type Header struct {
 	Required bool `json:"required,omitempty"`
 	Depreciated bool `json:"depreciated,omitempty"`
 	AllowEmptyvalue bool `json:"allowEmptyValue,omitempty"`
+
+	Style string `json:"style,omitempty"`
+	Explode bool `json:"example,omitempty"` 
+	AllowReserved bool `json:"allowReserved,omitempty"`
+	Schema *Schema `json:"schema,omitempty"`
+	Example *Example `json:"example,omitempty"`
+	Examples map[string]*Example `json:"examples,omitempty"`
 }
 
 type CallBack struct {
