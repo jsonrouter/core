@@ -37,8 +37,8 @@ func (handler *Handler) updateSpecHeaders() {
 		}
 
 	case *openapiv3.Spec:
-
-		/*path := spec.Paths[handler.Path("")]
+/*
+		path := spec.Paths[handler.Path("")]
 		operation := path[strings.ToLower(handler.Method)]
 
 		x := 200
@@ -50,7 +50,7 @@ func (handler *Handler) updateSpecHeaders() {
 					Default: fmt.Sprintf("%v", v),
 				},
 			}
-		}*/
-
+		}
+*/
 	}
 }
