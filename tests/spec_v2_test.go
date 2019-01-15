@@ -38,12 +38,27 @@ func TestSpecV2(t *testing.T) {
 		"Test the spec",
 		func (t *testing.T) {
 
-			if spec.Paths["/openapi.spec.v2.json"] == nil {
-				t.Error(fmt.Errorf("SPEC HAS INVALID PATHS! %v", len(spec.Paths)))
+			// get number of actual routes
+			var tpm int
+			for _, path := range spec.Paths {
+				for _, method := range []string{
+					"get",
+					"post",
+					"delete",
+					"patch",
+					"head",
+					"put",
+					"options",
+				} {
+					_, ok := path[method]
+					if ok {
+						tpm++
+					}
+				}
 			}
 
-			if spec.Paths["/openapi.spec.v3.json"] == nil {
-				t.Error(fmt.Errorf("SPEC HAS INVALID PATHS! %v", len(spec.Paths)))
+			if spec.Paths["/openapi.spec.json"] == nil {
+				t.Error(fmt.Errorf("SPEC HAS INVALID PATH! %v", len(spec.Paths)))
 			}
 
 			if spec.Host != CONST_SPEC_HOST {
@@ -58,12 +73,16 @@ func TestSpecV2(t *testing.T) {
 				t.Error(errors.New("SPEC HAS INVALID CONTACT URL!"))
 			}
 
-			if len(spec.Paths) != 4 {
+			if tpm != 4 {
+				t.Error(fmt.Errorf("SPEC HAS INVALID NUM OF ROUTES! %v", tpm))
+			}
+
+			if len(spec.Paths) != 3 {
 				t.Error(fmt.Errorf("SPEC HAS INVALID NUM OF PATHS! %v", len(spec.Paths)))
 			}
 
 			if spec.Paths["/test/resource/{id}"] == nil {
-				t.Error(fmt.Errorf("SPEC HAS INVALID PATHS! %v", len(spec.Paths)))
+				t.Error(fmt.Errorf("SPEC HAS INVALID PATH! %v", len(spec.Paths)))
 			}
 
 			pl := len(spec.Paths["/test/resource/{id}"]["get"].Parameters)
