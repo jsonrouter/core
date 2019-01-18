@@ -34,7 +34,7 @@ type Node struct {
 	Methods map[string]*Handler
 	Module *Module
 	Modules []*Module
-	Security interface{}
+	SecurityModule SecurityModule
 	Validation *validation.Config
 	Validations []*validation.Config
 	spec interface{}
@@ -46,7 +46,7 @@ func (node *Node) new(path string) *Node {
 	n.Parent = node
 	n.Modules = node.Modules
 	n.Path = path
-	n.Security = node.Security
+	n.SecurityModule = node.SecurityModule
 	n.Validations = node.Validations
 	// create a new map inheriting the values from the parant node
 	for k, v := range node.Headers {

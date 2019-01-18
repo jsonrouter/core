@@ -24,6 +24,7 @@ func (node *Node) newHandler(method string) *Handler {
 		Node: node,
 		Method: method,
 		Headers: map[string]interface{}{},
+		SecurityModule: node.SecurityModule,
 	}
 	for k, v := range node.Headers {
 		handler.Headers[k] = v
@@ -44,7 +45,7 @@ type Handler struct {
 	spec struct {
 		addedBodyDefinition bool
 	}
-	securityModule SecurityModule
+	SecurityModule SecurityModule
 	sync.RWMutex
 }
 
@@ -53,15 +54,20 @@ func (handler *Handler) Path(removePrefix ...string) string {
 }
 
 func (handler *Handler) Ref(basePath string) string {
- 	return fmt.Sprintf(
-		"%s-%s",
-		handler.Path(basePath),
-		handler.Method,
+ 	return strings.Replace(
+		fmt.Sprintf(
+			"%s-%s",
+			handler.Path(basePath),
+			handler.Method,
+		),
+		"/",
+		"+",
+		-1,
 	)
 }
 
 func (handler *Handler) Security(sec SecurityModule) *Handler {
-	handler.securityModule = sec
+	handler.SecurityModule = sec
 	switch spec := handler.Node.Config.Spec.(type) {
 	case *openapiv2.Spec:
 		spec.SecurityDefinitions[sec.Name()] = sec.DefinitionV2()

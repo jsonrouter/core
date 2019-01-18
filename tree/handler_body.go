@@ -34,7 +34,7 @@ func (handler *Handler) updateSpecParams(required bool, payload validation.Paylo
 		path := spec.Paths[handler.Path(spec.BasePath)]
 		pathMethod := path[strings.ToLower(handler.Method)]
 		def := handler.Ref(spec.BasePath)
-		ref := fmt.Sprintf("#/definitions%s", def)
+		ref := fmt.Sprintf("#/definitions/%s", def)
 
 		if spec.Definitions[def] == nil {
 			spec.Definitions[def] = &openapiv2.Definition{
