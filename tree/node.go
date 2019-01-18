@@ -7,8 +7,9 @@ import	(
 	"time"
 	"strings"
 	//
-	"github.com/jsonrouter/core/http"
 	"github.com/jsonrouter/validation"
+	"github.com/jsonrouter/core/http"
+	"github.com/jsonrouter/core/security"
 )
 
 func NewNode(config *Config) *Node {
@@ -34,7 +35,7 @@ type Node struct {
 	Methods map[string]*Handler
 	Module *Module
 	Modules []*Module
-	SecurityModule SecurityModule
+	SecurityModule security.SecurityModule
 	Validation *validation.Config
 	Validations []*validation.Config
 	spec interface{}

@@ -13,6 +13,7 @@ import	(
 	//
 	"github.com/jsonrouter/core/http"
 	"github.com/jsonrouter/validation"
+	"github.com/jsonrouter/core/security"
 	"github.com/jsonrouter/core/openapi/v2"
 	"github.com/jsonrouter/core/openapi/v3"
 )
@@ -45,7 +46,7 @@ type Handler struct {
 	spec struct {
 		addedBodyDefinition bool
 	}
-	SecurityModule SecurityModule
+	SecurityModule security.SecurityModule
 	sync.RWMutex
 }
 
