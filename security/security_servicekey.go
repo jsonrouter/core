@@ -8,22 +8,22 @@ import (
 
 // API key implementation
 
-type Security_ServiceKey struct {
+type ServiceKey struct {
 	Key string
 }
 
-func (self *Security_ServiceKey) Name() string {
+func (self *ServiceKey) Name() string {
 	return "serviceKey"
 }
 
-func (self *Security_ServiceKey) Validate(req http.Request) *http.Status {
+func (self *ServiceKey) Validate(req http.Request) *http.Status {
 	if req.GetHeader("Authorization") == self.Key {
 		return nil
 	}
 	return req.Respond(403, "serviceKey: FAILED TO VALIDATE, ACCESS DENIED!")
 }
 
-func (self *Security_ServiceKey) DefinitionV2() *openapiv2.SecurityDefinition {
+func (self *ServiceKey) DefinitionV2() *openapiv2.SecurityDefinition {
 	return &openapiv2.SecurityDefinition{
 		Type: self.Name(),
 		Name: self.Name(),
