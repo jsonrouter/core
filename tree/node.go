@@ -56,6 +56,11 @@ func (node *Node) new(path string) *Node {
 	return n
 }
 
+func (node *Node) Security(module security.SecurityModule) *Node {
+	node.SecurityModule = module
+	return node
+}
+
 func (node *Node) SetHeaders(headers map[string]interface{}) *Node {
 	node.Headers = headers
 	return node
