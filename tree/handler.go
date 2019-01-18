@@ -67,7 +67,7 @@ func (handler *Handler) Ref(basePath string) string {
 	)
 }
 
-func (handler *Handler) Security(sec SecurityModule) *Handler {
+func (handler *Handler) Security(sec security.SecurityModule) *Handler {
 	handler.SecurityModule = sec
 	switch spec := handler.Node.Config.Spec.(type) {
 	case *openapiv2.Spec:
