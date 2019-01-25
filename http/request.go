@@ -10,6 +10,7 @@ import 	(
 )
 
 type Request interface {
+	Testing() bool
 	UID() (string, error)
 	FullPath() string
 	IsTLS() bool

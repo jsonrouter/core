@@ -44,6 +44,10 @@ func (ti *MockRequest) UID() (string, error) {
 	return uid.String(), nil
 }
 
+func (req *MockRequest) Testing() bool {
+	return true
+}
+
 func (ti *MockRequest) FullPath() string { return ti.path }
 
 func (ti *MockRequest) IsTLS() bool { return false }
