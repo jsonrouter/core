@@ -6,15 +6,7 @@ UPDATES
 
 Everything is now focussed around writing valid openAPI v1/v2 spec for you.
 
-(&Handler{}).Required(...) is now either:
-
-.Required(...)
-
-or
-
-.Optional(...)
-
-Initialising JSONrouter is done via the /platforms/* repos as a Router object, this saves brainpower.
+Initialising JSONrouter is done via the /platforms/* repos as a Router object.
 
 ## Features
 
@@ -251,7 +243,7 @@ Currently any headers settings applied to the node will apply to all children.
 ```
 
 	v1 := rootPath.Add("v1").SetHeaders(
-		map[string]string{
+		map[string]interface{}{
 			"Access-Control-Allow-Headers":		"Authorization,Content-Type",
 			"Access-Control-Allow-Origin":		"*",
 		},
