@@ -6,7 +6,7 @@ UPDATES
 
 Everything is now focussed around writing valid openAPI v1/v2 spec for you.
 
-(&Handler{}).Body(...) is now either:
+(&Handler{}).Required(...) is now either:
 
 .Required(...)
 
@@ -33,7 +33,7 @@ Allows custom validation & middleware functions.
 
 Allows very complex routing without creating a mess.
 
-## web.RequestInterface request context
+## http.Request request context
 
 This package uses an interface to allow usage of different http implementations such as net/http package or valyala/fasthttp package. Unfortunately, fasthttp doesn't provide API identical to net/http, so a common interface type has been created to allow GF to operate with either dependency.
 
@@ -51,11 +51,12 @@ package main
 import (
 	"net/http"
 	//
-	standard "github.com/golangdaddy/tarantula/router/standard"
-	"github.com/golangdaddy/tarantula/web"
-	"github.com/golangdaddy/tarantula/web/validation"
-	"github.com/golangdaddy/tarantula/log"
-	"github.com/golangdaddy/tarantula/log/testing"
+	"github.com/jsonrouter/core/http"
+	"github.com/jsonrouter/core/openapi/v2"
+	"github.com/jsonrouter/core/validation"
+	"github.com/jsonrouter/logging"
+	"github.com/jsonrouter/logging/testing"
+	"github.com/jsonrouter/platforms/standard"
 )
 
 type App struct {
@@ -72,13 +73,16 @@ func main() {
 		logger: logs.NewClient().NewLogger("Server"),
 	}
 
-	root, router := standard.NewRouter(app.logger, "www")
+	router, err := jsonrouter.New(app.logger, openapiv2.New("localhost", "test"))
+	if err != nil {
+		panic(err)
+	}
 
-	api := root.Add("/api")
+	api := router.Add("/api")
 
 	api.Add("/product").Param(validation.StringExact(30), "productID").GET(
 		app.api_product_get,
-	).Describe(
+	).Description(
 		"Gets the specified product",
 	).Response(
 		Product{},
@@ -88,7 +92,7 @@ func main() {
 }
 
 
-func (app *App) api_product_get(req web.RequestInterface) *web.ResponseStatus {
+func (app *App) api_product_get(req http.Request) *http.Status {
 	// do something
 	return nil
 }
@@ -105,7 +109,7 @@ Constructing http path routes with GF is as simple as chaining these methods, or
 
 ```
 
-func apiUserPut(req web.RequestInterface, arg interface{}) *web.ResponseStatus {
+func apiUserPut(req http.Request, arg interface{}) *http.Status {
 
 	id := req.Param("id").(string)
 	firstName := req.BodyParam("firstName").(string)
@@ -122,7 +126,7 @@ func apiUserPut(req web.RequestInterface, arg interface{}) *web.ResponseStatus {
 	return req.Respond(user)
 }
 
-func apiUserGet(req web.RequestInterface, arg interface{}) *web.ResponseStatus {
+func apiUserGet(req http.Request, arg interface{}) *http.Status {
 
 	id := req.Param("id").(string)
 
@@ -131,7 +135,7 @@ func apiUserGet(req web.RequestInterface, arg interface{}) *web.ResponseStatus {
 	return req.Respond(user)
 }
 
-func apiUserPatch(req web.RequestInterface, arg interface{}) *web.ResponseStatus {
+func apiUserPatch(req http.Request, arg interface{}) *http.Status {
 
 	id := req.Param("id").(string)
 	field := req.BodyParam("field").(string)
@@ -155,11 +159,14 @@ func apiUserPatch(req web.RequestInterface, arg interface{}) *web.ResponseStatus
 	return req.Respond(user)
 }
 
-func apiUserDelete(req web.RequestInterface, arg interface{}) *web.ResponseStatus {
+func apiUserDelete(req http.Request, arg interface{}) *http.Status {
 
 	id := req.Param("id").(string)
 
-	ok, user := db.Delete("user", id); if !ok { return req.Fail() }
+	ok, user := db.Delete("user", id)
+	if !ok {
+		return req.Fail()
+	}
 
 	return nil
 }
@@ -174,7 +181,7 @@ func main() {
 
 			user.GET(
 				app.apiUserGet,
-			).Describe(
+			).Description(
 				"Gets the user.",
 			).Response(
 				User{},
@@ -182,9 +189,9 @@ func main() {
 
 			user.PUT(
 				app.apiUserPut,
-			).Describe(
+			).Description(
 				"Creates new user.",
-			).Body(
+			).Required(
 				&validation.Payload{
 					"firstName": validation.String(2, 30),
 					"lastName":	validation.String(2, 30),
@@ -195,15 +202,15 @@ func main() {
 
 			user.DELETE(
 				app.apiUserDelete,
-			).Describe(
+			).Description(
 				"Deletes the user.",
 			)
 
 			user.PATCH(
 				app.apiUserPatch,
-			).Describe(
+			).Description(
 				"Patches user fields.",
-			).Body(
+			).Required(
 				&validation.Payload{
 					"field": validation.String(2, 12),
 					"value": validation.String(2, 30),
@@ -239,11 +246,12 @@ As you can see you can create restful API structures, whilst having all sanitati
 
 # Headers & CORS setup
 
-Currently any headers settings applied to the routing config will be applied globally.
+Currently any headers settings applied to the node will apply to all children.
 
 ```
-	root.Config.SetHeaders(
-		common.Headers{
+
+	v1 := rootPath.Add("v1").SetHeaders(
+		map[string]string{
 			"Access-Control-Allow-Headers":		"Authorization,Content-Type",
 			"Access-Control-Allow-Origin":		"*",
 		},
@@ -253,7 +261,7 @@ Currently any headers settings applied to the routing config will be applied glo
 
 # Validation
 
-One of the awesome things about GF is that every path-parameter & top-level JSON-object-parameter can have validation. This can be provided by one of many out-of-the-box validation functions, but custom validation functions can also be used with this system, allowing you to create the correct validation that your app needs. Validation functions can be thought of as middleware functions that can modify the request object by adding new params using req.SetParam(key, value), which means the validated values will always be referenceable through the request object.
+One of the awesome things about JSONrouter is that every path-parameter & top-level JSON-object-parameter can have validation. This can be provided by one of many out-of-the-box validation functions, but custom validation functions can also be used with this system, allowing you to create the correct validation that your app needs. Validation functions can be thought of as middleware functions that can modify the request object by adding new params using req.SetParam(key, value), which means the validated values will always be referenceable through the request object.
 
 A struct of type *validation.Config is passed to the .Param(...) method of any *web.Node to create a path parameter. This config struct has fields for path & JSON params to allow the config to be used to validate either.
 
@@ -275,7 +283,7 @@ func Int() *validation.Config {
 
 	return NewValidationConfig(
 		0,
-		func (web.web.RequestInterface, param string) (bool, interface{}) {
+		func (web.http.Request, param string) (bool, interface{}) {
 
 			if len(param) == 0 { return false, nil }
 
@@ -283,7 +291,7 @@ func Int() *validation.Config {
 
 			return err == nil, val
 		},
-		func (web.web.RequestInterface, param interface{}) (bool, interface{}) {
+		func (web.http.Request, param interface{}) (bool, interface{}) {
 
 			i, ok := param.(float64)
 
@@ -304,7 +312,7 @@ Using the .Payload method on any .POST(...) or .PUT(...) will allow the specific
 
 	.POST(
 		app.countryAddtown,
-	).Body(
+	).Required(
 		&common.Payload{
 			"country": validation.CountryISO2(),
 			"tier":	validation.Int(),
@@ -313,7 +321,7 @@ Using the .Payload method on any .POST(...) or .PUT(...) will allow the specific
 
 ```
 
-When JSON params are added to the web.RequestInterface params map, they are prefixed with an underscore to avoid name collisions with route params. Below is an example of accessing the above payload parameters via an instance of web.RequestInterface.
+When JSON params are added to the http.Request params map, they are prefixed with an underscore to avoid name collisions with route params. Below is an example of accessing the above payload parameters via an instance of http.Request.
 
 ```
 
@@ -385,7 +393,7 @@ No arguments can be supplied to this function.
 
 	.POST(
 		pp.DoSomething,
-	).Body(
+	).Required(
 		&common.Payload{
 			"myObject":	validation.MapStringInterface(),
 		},
@@ -405,7 +413,7 @@ No arguments can be supplied to this function.
 
 	.POST(
 		app.DoSomething,
-	).Body(
+	).Required(
 		common.Payload{
 			"myArray": validation.InterfaceArray(),
 		},
@@ -465,7 +473,7 @@ An example of this is a piece of middleware that validates the user's session, a
 ```
 
 	moduleRegistry := common.ModuleRegistry{
-		"check_UserSession":		func(req web.RequestInterface, arg interface{}) *web.ResponseStatus {
+		"check_UserSession":		func(req http.Request, arg interface{}) *http.Status {
 
 			hValue := req.GetHeader("Authorization")
 
