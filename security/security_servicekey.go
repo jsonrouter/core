@@ -17,7 +17,7 @@ func (self *ServiceKey) Name() string {
 }
 
 func (self *ServiceKey) Validate(req http.Request) *http.Status {
-	if req.GetHeader("Authorization") == self.Key {
+	if req.GetRequestHeader("Authorization") == self.Key {
 		return nil
 	}
 	return req.Respond(403, "serviceKey: FAILED TO VALIDATE, ACCESS DENIED!")

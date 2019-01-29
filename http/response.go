@@ -49,7 +49,7 @@ func (status *Status) Respond(req Request) {
 
 		default:
 
-			req.SetHeader("Content-Type", "application/json")
+			req.SetResponseHeader("Content-Type", "application/json")
 			b, err := json.Marshal(status.Value)
 			if req.Log().Error(err) {
 				status.Code = 500

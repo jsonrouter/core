@@ -19,7 +19,8 @@ func NewMockRequest(method, path string) Request {
 		device: "Mobile",
 		params: map[string]interface{}{},
 		bodyParams: map[string]interface{}{},
-		headers: map[string]string{},
+		requestHeaders: map[string]string{},
+		responseHeaders: map[string]string{},
 		log: logs.NewClient().NewLogger("MockRequest"),
 	}
 }
@@ -30,7 +31,8 @@ type MockRequest struct {
 	path string
 	params map[string]interface{}
 	bodyParams map[string]interface{}
-	headers map[string]string
+	requestHeaders map[string]string
+	responseHeaders map[string]string
 	log logging.Logger
 }
 
@@ -68,8 +70,10 @@ func (ti *MockRequest) BodyParams() map[string]interface{} { return ti.bodyParam
 func (ti *MockRequest) SetBodyParam(k string, i interface{}) { ti.bodyParams[k] = i }
 func (ti *MockRequest) SetBodyParams(m map[string]interface{}) { ti.bodyParams = m }
 
-func (ti *MockRequest) SetHeader(k, v string) { ti.headers[k] = v }
-func (ti *MockRequest) GetHeader(k string) string { return ti.headers[k] }
+func (ti *MockRequest) SetRequestHeader(k, v string) { ti.requestHeaders[k] = v }
+func (ti *MockRequest) GetRequestHeader(k string) string { return ti.requestHeaders[k] }
+func (ti *MockRequest) SetResponseHeader(k, v string) { ti.responseHeaders[k] = v }
+func (ti *MockRequest) GetResponseHeader(k string) string { return ti.responseHeaders[k] }
 
 func (ti *MockRequest) RawBody() (*Status, []byte) { return nil, []byte{} }
 
