@@ -1,7 +1,6 @@
 package http
 
 import (
-	"errors"
 	"strconv"
 	"reflect"
 	"encoding/json"
@@ -25,10 +24,10 @@ func (status *Status) MessageString() string {
 	return "INVALID STATUS MESSAGE TYPE: "+reflect.TypeOf(status.Message).String()
 }
 
-func (status *Status) Respond(req Request) error {
+func (status *Status) Respond(req Request) {
 
 	// return with no action if handler returns nil
-	if status == nil { return nil }
+	if status == nil { return }
 
 	switch v := status.Value.(type) {
 
@@ -50,22 +49,21 @@ func (status *Status) Respond(req Request) error {
 
 		default:
 
-			req.SetHeader("Content-Type", "application/json")
+			req.SetResponseHeader("Content-Type", "application/json")
 			b, err := json.Marshal(status.Value)
-			if err != nil {
-				return err
+			if req.Log().Error(err) {
+				status.Code = 500
+				break
 			}
 			req.Write(b)
 
 	}
 
 	if status.Code >= 200 && status.Code < 300 {
-		return nil
+		return
 	}
 
 	statusMessage := "HTTP ERROR " + strconv.Itoa(status.Code) + ": " + status.MessageString()
 
 	req.HttpError(statusMessage, status.Code)
-
-	return errors.New(statusMessage)
 }

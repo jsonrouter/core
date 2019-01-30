@@ -40,54 +40,51 @@ func (handler *Handler) Spec() *HandlerSpec {
 		Description:			handler.Descr,
 	}
 
-	for _, schema := range handler.payloadSchema {
+	switch data := handler.payloadSchema.(type) {
 
-		switch data := schema.(type) {
+		case nil:
 
-			case nil:
+		case *validation.Payload:
 
-			case *validation.Payload:
+			var payloadSchema map[string]*validation.Config
+			if schema, ok := spec.PayloadSchema.(map[string]*validation.Config); ok {
+				payloadSchema = schema
+			} else {
+				payloadSchema = map[string]*validation.Config{}
+			}
+			for k, cfg := range *data { payloadSchema[k] = cfg }
+			spec.PayloadSchema = payloadSchema
 
-				var payloadSchema map[string]*validation.Config
-				if schema, ok := spec.PayloadSchema.(map[string]*validation.Config); ok {
-					payloadSchema = schema
-				} else {
-					payloadSchema = map[string]*validation.Config{}
-				}
-				for k, cfg := range *data { payloadSchema[k] = cfg }
-				spec.PayloadSchema = payloadSchema
+		case *validation.Optional:
 
-			case *validation.Optional:
+			var payloadSchema map[string]*validation.Config
+			if schema, ok := spec.PayloadSchema.(map[string]*validation.Config); ok {
+				payloadSchema = schema
+			} else {
+				payloadSchema = map[string]*validation.Config{}
+			}
+			for k, cfg := range *data {
+				payloadSchema[k] = cfg
+			}
+			spec.PayloadSchema = payloadSchema
 
-				var payloadSchema map[string]*validation.Config
-				if schema, ok := spec.PayloadSchema.(map[string]*validation.Config); ok {
-					payloadSchema = schema
-				} else {
-					payloadSchema = map[string]*validation.Config{}
-				}
-				for k, cfg := range *data {
-					payloadSchema[k] = cfg
-				}
-				spec.PayloadSchema = payloadSchema
+		case *validation.Object:
 
-			case *validation.Object:
+			spec.PayloadSchema = data
 
-				spec.PayloadSchema = data
+		case *validation.Array:
 
-			case *validation.Array:
+			spec.PayloadSchema = data
 
-				spec.PayloadSchema = data
+		default:
 
-			default:
-
-				spec.PayloadSchema = fmt.Sprintf(
-					"unknown_type(%s)",
-					reflect.TypeOf(handler.payloadSchema).String(),
-				)
-
-		}
+			spec.PayloadSchema = fmt.Sprintf(
+				"unknown_type(%s)",
+				reflect.TypeOf(handler.payloadSchema).String(),
+			)
 
 	}
+
 
 	spec.NewMockPath()
 	if spec.Method != "GET" {

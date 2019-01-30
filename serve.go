@@ -1,15 +1,22 @@
 package core
 
 import (
-		"strings"
-		//
-		"github.com/jsonrouter/core/http"
-		"github.com/jsonrouter/core/tree"
-		)
+	"strings"
+	//
+	"github.com/jsonrouter/core/http"
+	"github.com/jsonrouter/core/tree"
+)
 
 const	(
-		ROBOTS_TXT = "User-agent: *\nDisallow: /api/"
-		)
+	ROBOTS_TXT = "User-agent: *\nDisallow: /api/"
+)
+
+type Router interface{
+  Serve(int)
+}
+
+type Headers map[string]string
+
 
 // main handler
 func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *http.Status) {
@@ -96,7 +103,7 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 			return
 		}
 
-		req.SetHeader("Content-Type", handler.File.MimeType)
+		req.SetResponseHeader("Content-Type", handler.File.MimeType)
 
 		status = req.Respond(handler.File.Cache)
 		status.Respond(req)

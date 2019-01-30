@@ -2,10 +2,14 @@ package tree
 
 import (
 	"strings"
+	"strconv"
 	//
 	"github.com/jsonrouter/core/openapi/v2"
 	"github.com/jsonrouter/core/openapi/v3"
 )
+
+// make sure there are no duplicate OperationIDs
+var opCounter int
 
 func (node *Node) addHandler(method string, handler *Handler) {
 
@@ -17,12 +21,15 @@ func (node *Node) addHandler(method string, handler *Handler) {
 		}
 
 		pathMethod := &openapiv2.PathMethod{
+			OperationID: "?"+strconv.Itoa(opCounter),
 			Produces: []string{
 				"application/json",
 			},
 			Description: "Serves the OpenAPI spec JSON.",
 			Responses: map[int]*openapiv2.Response{},
 		}
+
+		opCounter++
 
 		// http 500 status
 		s500 := pathMethod.Response(500)

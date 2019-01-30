@@ -16,7 +16,7 @@ func New(host, serviceName string) *Spec {
 		Consumes: []string{"application/json"},
 		Produces: []string{"application/json"},
 		Definitions: map[string]*Definition{},
-//		SecurityDefinitions: []*SecurityDefinition{},
+		SecurityDefinitions: map[string]*SecurityDefinition{},
 	}
 }
 
@@ -30,7 +30,13 @@ func Type(x interface{}) string {
 		return "integer"
 	case "float32", "float64":
 		return "number"
+	case "map[string]interface {}":
+		return "object"
+	case "[]string":
+		return "array"
+	case "[]interface {}":
+		return "array"
 	}
-	panic("openapi: UNMAPPED TYPE")
+	panic("openapi: UNMAPPED TYPE "+reflect.TypeOf(x).String())
 	return ""
 }

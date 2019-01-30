@@ -27,7 +27,7 @@ func (config *Config) SpecV3() *openapiv3.Spec {
 	return config.Spec.(*openapiv3.Spec)
 }
 
-func (config *Config) ServeSpec(req http.Request) *http.Status {
+func (config *Config) SpecHandler(req http.Request) *http.Status {
 	return req.Respond(config.Spec)
 }
 
