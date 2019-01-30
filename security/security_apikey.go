@@ -1,16 +1,10 @@
-package tree
+package security
 
 import (
+	"github.com/jsonrouter/core/http"
 	"github.com/jsonrouter/core/openapi/v2"
 //	"github.com/jsonrouter/core/openapi/v3"
 )
-
-type SecurityModule interface {
-	Name() string
-	Validate()
-	DefinitionV2() *openapiv2.SecurityDefinition
-//	DefinitionV3() *openapiv3.SecurityDefinition
-}
 
 // API key implementation
 
@@ -21,7 +15,8 @@ func (apiKey *Security_ApiKey) Name() string {
 	return "apiKey"
 }
 
-func (apiKey *Security_ApiKey) Validate() {
+func (apiKey *Security_ApiKey) Validate(req http.Request) *http.Status {
+	return nil
 }
 
 func (apiKey *Security_ApiKey) DefinitionV2() *openapiv2.SecurityDefinition {

@@ -13,6 +13,7 @@ import	(
 	//
 	"github.com/jsonrouter/core/http"
 	"github.com/jsonrouter/validation"
+	"github.com/jsonrouter/core/security"
 	"github.com/jsonrouter/core/openapi/v2"
 	"github.com/jsonrouter/core/openapi/v3"
 )
@@ -24,6 +25,7 @@ func (node *Node) newHandler(method string) *Handler {
 		Node: node,
 		Method: method,
 		Headers: map[string]interface{}{},
+		SecurityModule: node.SecurityModule,
 	}
 	for k, v := range node.Headers {
 		handler.Headers[k] = v
@@ -44,7 +46,7 @@ type Handler struct {
 	spec struct {
 		addedBodyDefinition bool
 	}
-	securityModule SecurityModule
+	SecurityModule security.SecurityModule
 	sync.RWMutex
 }
 
@@ -53,15 +55,20 @@ func (handler *Handler) Path(removePrefix ...string) string {
 }
 
 func (handler *Handler) Ref(basePath string) string {
- 	return fmt.Sprintf(
-		"%s-%s",
-		handler.Path(basePath),
-		handler.Method,
+ 	return strings.Replace(
+		fmt.Sprintf(
+			"%s-%s",
+			handler.Path(basePath),
+			handler.Method,
+		),
+		"/",
+		"+",
+		-1,
 	)
 }
 
-func (handler *Handler) Security(sec SecurityModule) *Handler {
-	handler.securityModule = sec
+func (handler *Handler) Security(sec security.SecurityModule) *Handler {
+	handler.SecurityModule = sec
 	switch spec := handler.Node.Config.Spec.(type) {
 	case *openapiv2.Spec:
 		spec.SecurityDefinitions[sec.Name()] = sec.DefinitionV2()

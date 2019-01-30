@@ -103,7 +103,7 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 			return
 		}
 
-		req.SetHeader("Content-Type", handler.File.MimeType)
+		req.SetResponseHeader("Content-Type", handler.File.MimeType)
 
 		status = req.Respond(handler.File.Cache)
 		status.Respond(req)

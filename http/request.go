@@ -10,6 +10,7 @@ import 	(
 )
 
 type Request interface {
+	Testing() bool
 	UID() (string, error)
 	FullPath() string
 	IsTLS() bool
@@ -25,8 +26,10 @@ type Request interface {
 	BodyParams() map[string]interface{}
 	SetBodyParam(string, interface{})
 	SetBodyParams(map[string]interface{})
-	SetHeader(string, string)
-	GetHeader(string) string
+	SetResponseHeader(string, string)
+	GetResponseHeader(string) string
+	SetRequestHeader(string, string)
+	GetRequestHeader(string) string
 	RawBody() (*Status, []byte)
 	ReadBodyObject() *Status
 	ReadBodyArray() *Status
