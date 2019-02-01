@@ -5,6 +5,7 @@ import (
 	//
 	"github.com/jsonrouter/core/http"
 	"github.com/jsonrouter/core/tree"
+	"github.com/chrysmore/metrics"
 )
 
 const	(
@@ -21,7 +22,12 @@ type Headers map[string]string
 // main handler
 func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *http.Status) {
 
+	metrics.Timer.Start()	
+	defer metrics.Update(true, false)
+	defer metrics.Timer.Stop()
+
 	// enforce https-only if required
+
 	if node.Config.ForcedTLS {
 		if !req.IsTLS() {
 			status = req.Respond(502, "PLEASE UPGRADE TO HTTPS")
