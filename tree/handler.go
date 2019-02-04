@@ -209,14 +209,21 @@ func (handler *Handler) ReadPayload(req http.Request) *http.Status {
 					req,
 					req.Body(key),
 				)
-				if status != nil {
-					// dont leak data to logs
-					//status.Value = req.Body(key)
-					status.Message = fmt.Sprintf("%s KEY '%s'", status.MessageString(), key)
-					statusMessages[key] = status
+				if vc.RequiredValue {
+					if status != nil {
+						// dont leak data to logs
+						//status.Value = req.Body(key)
+						status.Message = fmt.Sprintf("%s KEY '%s'", status.MessageString(), key)
+						statusMessages[key] = status
+						break
+					}
 				} else {
-					bodyParams[key] = x
+					if status != nil {
+						break
+					}
 				}
+
+				bodyParams[key] = x
 			}
 
 		default:
@@ -227,7 +234,9 @@ func (handler *Handler) ReadPayload(req http.Request) *http.Status {
 
 	if len(statusMessages) > 0 {
 		b, _ := json.Marshal(statusMessages)
-		return req.Respond(500, string(b))
+		for _, status := range statusMessages {
+			return req.Respond(status.Code, string(b))
+		}
 	}
 
 	lp := len(bodyParams)
