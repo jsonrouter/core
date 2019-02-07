@@ -22,10 +22,6 @@ type Headers map[string]string
 // main handler
 func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *http.Status) {
 	met := node.Config.Metrics
-	node.Config.Log.Debug("Hello Request")
-
-	met.Counters["requestCount"].Increment()
-	met.Counters["requestCount"].Update(&node.Config.MetResults)
 
 	met.Timers["requestTime"].Start()	
 	defer met.Timers["requestTime"].Update(&node.Config.MetResults)
@@ -37,6 +33,9 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 	defer func(){
 		met.MultiCounters["responseCodes"].Increment(strconv.Itoa(status.Code))
 	}()
+
+	defer met.Counters["requestCount"].Update(&node.Config.MetResults)
+	defer met.Counters["requestCount"].Increment()
 
 	// enforce https-only if required
 
@@ -79,15 +78,19 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 			next = n
 			continue
 		}
-
-		req.HttpError("NO ROUTE FOUND AT " + next.FullPath() + "/" + segment, 404)
+		req.Respond()
+		//req.HttpError("NO ROUTE FOUND AT " + next.FullPath() + "/" + segment, 404)
+		status = req.Respond(404, "NO ROUTE FOUND")
+		status.Respond(req)
 		return
 	}
 
 	// resolve handler
 	handler := next.Handler(req)
 	if handler == nil {
-		req.HttpError("NO CONTROLLER FOUND AT " + next.FullPath(), 500)
+		//req.HttpError("NO CONTROLLER FOUND AT " + next.FullPath(), 500)
+		status = req.Respond(404, "NO CONTROLLER FOUND")
+		status.Respond(req)
 		return
 	}
 /*

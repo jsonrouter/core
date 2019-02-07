@@ -73,11 +73,11 @@ func TestSpecV2(t *testing.T) {
 				t.Error(errors.New("SPEC HAS INVALID CONTACT URL!"))
 			}
 
-			if tpm != 4 {
+			if tpm != 5 {
 				t.Error(fmt.Errorf("SPEC HAS INVALID NUM OF ROUTES! %v", tpm))
 			}
 
-			if len(spec.Paths) != 3 {
+			if len(spec.Paths) != 4 {
 				t.Error(fmt.Errorf("SPEC HAS INVALID NUM OF PATHS! %v", len(spec.Paths)))
 			}
 
