@@ -121,15 +121,13 @@ func (handler *Handler) Response(schema ...interface{}) *Handler {
 // Validates any payload present in the request body, according to the payloadSchema
 func (handler *Handler) ReadPayload(req http.Request) *http.Status {
 
-	// handle payload
-
 	var paramCount int
 	var optionalCount int
 	var readBodyObject bool
 	bodyParams := map[string]interface{}{}
 	statusMessages := map[string]*http.Status{}
 
-
+	// handle payload
 	switch params := handler.payloadSchema.(type) {
 
 		case nil:
@@ -204,19 +202,28 @@ func (handler *Handler) ReadPayload(req http.Request) *http.Status {
 			object := params
 
 			for key, vc := range object {
-				paramCount++
+
 				status, x := vc.BodyFunction(
 					req,
 					req.Body(key),
 				)
-				if status != nil {
-					// dont leak data to logs
-					//status.Value = req.Body(key)
-					status.Message = fmt.Sprintf("%s KEY '%s'", status.MessageString(), key)
-					statusMessages[key] = status
+				if vc.RequiredValue {
+					paramCount++
+					if status != nil {
+						// dont leak data to logs
+						//status.Value = req.Body(key)
+						status.Message = fmt.Sprintf("%s KEY '%s'", status.MessageString(), key)
+						statusMessages[key] = status
+						continue
+					}
 				} else {
-					bodyParams[key] = x
+					optionalCount++
+					if status != nil {
+						continue
+					}
 				}
+
+				bodyParams[key] = x
 			}
 
 		default:
@@ -227,7 +234,9 @@ func (handler *Handler) ReadPayload(req http.Request) *http.Status {
 
 	if len(statusMessages) > 0 {
 		b, _ := json.Marshal(statusMessages)
-		return req.Respond(500, string(b))
+		for _, status := range statusMessages {
+			return req.Respond(status.Code, string(b))
+		}
 	}
 
 	lp := len(bodyParams)
