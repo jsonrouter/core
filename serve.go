@@ -2,10 +2,10 @@ package core
 
 import (
 	"strings"
-	//
+	"strconv"
 	"github.com/jsonrouter/core/http"
 	"github.com/jsonrouter/core/tree"
-	"github.com/chrysmore/metrics"
+	//"github.com/chrysmore/metrics"
 )
 
 const	(
@@ -21,10 +21,22 @@ type Headers map[string]string
 
 // main handler
 func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *http.Status) {
+	met := node.Config.Metrics
+	node.Config.Log.Debug("Hello Request")
 
-	metrics.Timer.Start()	
-	defer metrics.Update(true, false)
-	defer metrics.Timer.Stop()
+	met.Counters["requestCount"].Increment()
+	met.Counters["requestCount"].Update(&node.Config.MetResults)
+
+	met.Timers["requestTime"].Start()	
+	defer met.Timers["requestTime"].Update(&node.Config.MetResults)
+	defer met.Timers["requestTime"].Stop()
+
+	status = &http.Status{}
+	defer met.MultiCounters["responseCodes"].Update(&node.Config.MetResults)
+	
+	defer func(){
+		met.MultiCounters["responseCodes"].Increment(strconv.Itoa(status.Code))
+	}()
 
 	// enforce https-only if required
 
@@ -126,5 +138,7 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 		req,
 	)
 
+
+	
 	return
 }
