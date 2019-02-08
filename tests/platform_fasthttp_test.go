@@ -6,6 +6,7 @@ import (
 	"testing"
 	//
 	"github.com/go-resty/resty"
+	"github.com/chrysmore/metrics"
 	//
 	"github.com/jsonrouter/validation"
 	"github.com/jsonrouter/core/http"
@@ -13,6 +14,34 @@ import (
 	"github.com/jsonrouter/core/openapi/v2"
 	"github.com/jsonrouter/platforms/fasthttp"
 )
+
+type TestHTTPStruct struct {
+	met metrics.Metrics
+}
+
+func (self *TestHTTPStruct) ApiGET(req http.Request) *http.Status {
+
+	x := req.Param("x").(int)
+	val := self.met.Counters["requestCount"].GetValue()
+	if int(val) != x {
+		req.Log().Debugf("CORRECT VALUE IS %v", x)
+		return req.Fail()
+	}
+
+	return nil
+}
+
+func (self *TestHTTPStruct) ApiPOST(req http.Request) *http.Status {
+
+	x := req.Param("x").(int)
+	val := self.met.Counters["requestCount"].GetValue()
+	if int(val) != (x + 1) {
+		req.Log().Debugf("CORRECT VALUE IS %v", x)
+		return req.Fail()
+	}
+
+	return nil
+}
 
 func TestFastHttp(t *testing.T) {
 
@@ -26,39 +55,20 @@ func TestFastHttp(t *testing.T) {
 
 	root, service := jsonrouter.New(log, s)
 
-	met := root.Config.Metrics
+	self := &TestHTTPStruct{
+		met: root.Config.Metrics,
+	}
 
 	endpoint := root.Add("/endpoint").Param(validation.Int(), "x")
 
-	endpoint.GET(
-		func (req http.Request) *http.Status {
-
-			x := req.Param("x").(int)
-			val := met.Counters["requestCount"].GetValue()
-			if int(val) != x {
-				req.Log().Debugf("CORRECT VALUE IS %v", x)
-				return req.Fail()
-			}
-
-			return nil
-		},
-	)
-
-	endpoint.POST(
-		func (req http.Request) *http.Status {
-
-			x := req.Param("x").(int)
-			val := met.Counters["requestCount"].GetValue()
-			if int(val) != x + 1 {
-				req.Log().Debugf("CORRECT VALUE IS %v", x)
-				return req.Fail()
-			}
-
-			return nil
-		},
-	)
+	endpoint.GET(self.ApiGET)
+	endpoint.POST(self.ApiPOST)
 
 	go func() {
+
+		//spec := root.Config.Spec.(*openapiv2.Spec)
+		//log.DebugJSON(spec)
+
 		if err := service.Serve(CONST_PORT); err != nil {
 			t.Error(err)
 			t.Fail()
@@ -67,9 +77,20 @@ func TestFastHttp(t *testing.T) {
 
 	time.Sleep(time.Second)
 
+	url := fmt.Sprintf("http://localhost:%d/openapi.spec.json", CONST_PORT)
+
+	resp, err := resty.R().Get(url)
+	if log.Error(err) || resp.StatusCode() == 500 {
+		log.NewError(resp.String())
+		t.Fail()
+		return
+	}
+
+	log.Debug(resp.String())
+
 	for x := 0; x < 10; x+=2 {
 
-		url := fmt.Sprintf("http://localhost:%d/endpoint/%d", CONST_PORT, x)
+		url = fmt.Sprintf("http://localhost:%d/endpoint/%d", CONST_PORT, x)
 
 		log.Debug(url)
 
@@ -88,6 +109,7 @@ func TestFastHttp(t *testing.T) {
 		}
 
 	}
+
 	time.Sleep(3 * time.Second)
 
 }
