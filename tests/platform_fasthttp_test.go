@@ -49,7 +49,7 @@ func TestFastHttp(t *testing.T) {
 
 			x := req.Param("x").(int)
 			val := met.Counters["requestCount"].GetValue()
-			if int(val) != x {
+			if int(val) != x + 1 {
 				req.Log().Debugf("CORRECT VALUE IS %v", x)
 				return req.Fail()
 			}
