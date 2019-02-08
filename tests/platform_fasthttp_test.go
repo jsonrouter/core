@@ -42,6 +42,10 @@ func TestFastHttp(t *testing.T) {
 
 			return nil
 		},
+	).Description(
+		"test",
+	).Response(
+		validation.Object{},
 	)
 
 	endpoint.POST(
@@ -56,6 +60,10 @@ func TestFastHttp(t *testing.T) {
 
 			return nil
 		},
+	).Description(
+		"test",
+	).Response(
+		validation.Object{},
 	)
 
 	go func() {
