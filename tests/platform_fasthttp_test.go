@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	CONST_PORT = 999
+	CONST_TEST_PORT = 999
 )
 
 func TestFastHttp(t *testing.T) {
@@ -68,7 +68,7 @@ func TestFastHttp(t *testing.T) {
 	)
 
 	go func() {
-		if err := service.Serve(CONST_PORT); err != nil {
+		if err := service.Serve(CONST_TEST_PORT); err != nil {
 			t.Error(err)
 			t.Fail()
 		}
@@ -92,6 +92,6 @@ func TestFastHttp(t *testing.T) {
 		return
 	}
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(3 * time.Second)
 
 }
