@@ -23,8 +23,8 @@ func (self *TestHTTPStruct) ApiGET(req http.Request) *http.Status {
 
 	x := req.Param("x").(int)
 	val := self.met.Counters["requestCount"].GetValue()
-	if int(val) != x {
-		req.Log().Debugf("CORRECT VALUE IS %v", x)
+	if int(val) != (x + 1) {
+		req.Log().Debugf("GET: CORRECT VALUE IS %v NOT %v", x, int(val))
 		return req.Fail()
 	}
 
@@ -35,8 +35,8 @@ func (self *TestHTTPStruct) ApiPOST(req http.Request) *http.Status {
 
 	x := req.Param("x").(int)
 	val := self.met.Counters["requestCount"].GetValue()
-	if int(val) != (x + 1) {
-		req.Log().Debugf("CORRECT VALUE IS %v", x)
+	if int(val) != (x + 2) {
+		req.Log().Debugf("POST: CORRECT VALUE IS %v", x)
 		return req.Fail()
 	}
 
