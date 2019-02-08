@@ -4,12 +4,12 @@ import (
 	//ht "net/http"
 	"fmt"
 	"time"
-	"github.com/jsonrouter/core/http"
+	//"github.com/jsonrouter/core/http"
 	"github.com/jsonrouter/core/openapi/v2"
 	"github.com/jsonrouter/logging"
 	"github.com/jsonrouter/logging/testing"
 	"github.com/jsonrouter/platforms/fasthttp"
-	"github.com/jsonrouter/validation"
+	//"github.com/jsonrouter/validation"
 	"testing"
 	"github.com/go-resty/resty"
 )
@@ -24,17 +24,7 @@ func TestMetrics(t *testing.T) {
 		logger: logs.NewClient().NewLogger("Server"),
 	}
 
-	router, service := jsonrouter.New(app.logger, openapiv2.New("localhost", "test"))
-
-	api := router.Add("/api")
-
-	api.Add("/test").GET(
-		app.api_test,
-	).Description(
-		"test",
-	).Response(
-		validation.Object{},
-	)
+	_, service := jsonrouter.New(app.logger, openapiv2.New("localhost", "test"))
 
 	t.Log("Serving:")
 
@@ -65,7 +55,3 @@ func TestMetrics(t *testing.T) {
 	
 }
 
-func (app *App) api_test(req http.Request) *http.Status {
-	time.Sleep(10 * time.Millisecond)
-	return req.Respond(200)
-}
