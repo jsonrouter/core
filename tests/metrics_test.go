@@ -25,9 +25,6 @@ func TestMetrics(t *testing.T) {
 	}
 
 	router, service := jsonrouter.New(app.logger, openapiv2.New("localhost", "test"))
-	//if err != nil {
-	//	panic(err)
-	//}
 
 	api := router.Add("/api")
 
@@ -52,10 +49,8 @@ func TestMetrics(t *testing.T) {
 
 	url := fmt.Sprintf("http://127.0.0.1:%d/metrics", CONST_PORT)
 
-	// make a POST request to the bidder
 	for i := 0; i < 10; i++ {
 		resp, err := resty.R().Get(url)
-	//	time.Sleep(time.Second)	
 		
 		if (resp != nil) {t.Log(resp.String())}
 			
