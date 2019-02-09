@@ -2,19 +2,39 @@
 Metrics
 
 ## Usage
-
+  
 ```
 import "metrics"
 
-var met metrics.Metrics
+var met metrics.Metrics{
+			Timers: map[string]*metrics.Timer{
+				"timerName": &metrics.Timer{
+					Name : "timerName",
+					BufferSize: 1000,
+				},
+			},
+			Counters: map[string]*metrics.Counter{
+				"counterName" : &metrics.Counter{
+					Name : "counterName",
+				},
+			},
+			MultiCounters: map[string]*metrics.MultiCounter{
+				"multiCounterName" : &metrics.MultiCounter{
+					Name : "multiCounterName",
+					Counters : map[string]*metrics.Counter{},
+				},
+			}
 
+var resultsMap map[string]interface{}
+```
+```
 func timerExampele() {
-	met.Timer.Start()
+	met.Timers["timerName"].Start()
 
 	//stuff to time
 
-	met.Timer.Stop()
-	met.Update(true, false)
+	met.Timers["timerName"].Stop()
+	met.Timers["timerName"].Update(&resultsMap)
 }
 
 ```
@@ -23,15 +43,18 @@ func counterExample() {
 
 	//stuff to count
 
-	met.Counter.Increment()
-	met.Update(false, true)
+	met.Counters["counterName"].Increment()
+	met.Counters["counterName"].Update(&resultsMap)
 }
 ```
 
 ```
-...
-...
-met.Publish()
+func multiCounterExample() {
 
+	//stuff to count
+
+	met.MultiCounters["multiCounterName"].Increment("counterName")
+	met.MultiCounters["multiCounterName"].Update(&resultsMap)
+}
 ```
 
