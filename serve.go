@@ -37,6 +37,9 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 		met.Timers["requestTime"].Update(&node.Config.MetResults)
 		met.Timers["requestTime"].Stop()
 
+		met.MultiCounters["requestMethods"].Update(&node.Config.MetResults)
+		met.MultiCounters["requestMethods"].Increment(req.Method())
+
 		met.MultiCounters["responseCodes"].Update(&node.Config.MetResults)
 		met.MultiCounters["responseCodes"].Increment(strconv.Itoa(status.Code))
 
