@@ -21,28 +21,36 @@ type Headers map[string]string
 
 // main handler
 func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *http.Status) {
+
+	defer status.Respond(req)
+
 	met := node.Config.Metrics
 
-	met.Timers["requestTime"].Start()	
-	defer met.Timers["requestTime"].Update(&node.Config.MetResults)
-	defer met.Timers["requestTime"].Stop()
+	met.Timers["requestTime"].Start()
 
-	status = &http.Status{}
-	defer met.MultiCounters["responseCodes"].Update(&node.Config.MetResults)
-	
 	defer func(){
+
+		if status == nil {
+			status = req.Respond(200, "OK")
+		}
+
+		met.Timers["requestTime"].Update(&node.Config.MetResults)
+		met.Timers["requestTime"].Stop()
+
+		met.MultiCounters["responseCodes"].Update(&node.Config.MetResults)
 		met.MultiCounters["responseCodes"].Increment(strconv.Itoa(status.Code))
+
+		met.Counters["requestCount"].Update(&node.Config.MetResults)
+		met.Counters["requestCount"].Increment()
+
 	}()
 
-	defer met.Counters["requestCount"].Update(&node.Config.MetResults)
-	defer met.Counters["requestCount"].Increment()
 
 	// enforce https-only if required
 
 	if node.Config.ForcedTLS {
 		if !req.IsTLS() {
 			status = req.Respond(502, "PLEASE UPGRADE TO HTTPS")
-			status.Respond(req)
 			return
 		}
 	}
@@ -50,8 +58,7 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 	switch fullPath {
 
 		case "/robots.txt":
-
-			req.Write([]byte(ROBOTS_TXT))
+			status = req.Respond([]byte(ROBOTS_TXT))
 			return
 
 	}
@@ -67,7 +74,6 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 		var n *tree.Node
 		n, status = next.Next(req, segment)
 		if status != nil {
-			status.Respond(req)
 			return
 		}
 
@@ -81,7 +87,6 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 		req.Respond()
 		//req.HttpError("NO ROUTE FOUND AT " + next.FullPath() + "/" + segment, 404)
 		status = req.Respond(404, "NO ROUTE FOUND")
-		status.Respond(req)
 		return
 	}
 
@@ -90,7 +95,6 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 	if handler == nil {
 		//req.HttpError("NO CONTROLLER FOUND AT " + next.FullPath(), 500)
 		status = req.Respond(404, "NO CONTROLLER FOUND")
-		status.Respond(req)
 		return
 	}
 /*
@@ -100,19 +104,20 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 	}
 */
 	// return if preflight request
-	if req.Method() == "OPTIONS" { return }
+	if req.Method() == "OPTIONS" {
+		status = req.Respond(200, "OK")
+		return
+	}
 
 	// read the request body and unmarshal into specified schema
 	status = handler.ReadPayload(req)
 	if status != nil {
-		status.Respond(req)
 		return
 	}
 
 	// execute modules
 	status = handler.Node.RunModules(req)
 	if status != nil {
-		status.Respond(req)
 		return
 	}
 
@@ -120,14 +125,12 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 
 		status = handler.DetectContentType(req, handler.File.Path)
 		if status != nil {
-			status.Respond(req)
 			return
 		}
 
 		req.SetResponseHeader("Content-Type", handler.File.MimeType)
 
 		status = req.Respond(handler.File.Cache)
-		status.Respond(req)
 		return
 	}
 
@@ -137,11 +140,5 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 
 	// execute the handler
 	status = handler.Function(req)
-	status.Respond(
-		req,
-	)
-
-
-	
 	return
 }

@@ -21,6 +21,8 @@ type TestHTTPStruct struct {
 
 func (self *TestHTTPStruct) ApiGET(req http.Request) *http.Status {
 
+	req.Log().Debug("GET")
+
 	x := req.Param("x").(int)
 	val := self.met.Counters["requestCount"].GetValue()
 	if int(val) != (x + 1) {
@@ -28,10 +30,15 @@ func (self *TestHTTPStruct) ApiGET(req http.Request) *http.Status {
 		return req.Fail()
 	}
 
+	req.Log().Debug("GET2")
+
+
 	return nil
 }
 
 func (self *TestHTTPStruct) ApiPOST(req http.Request) *http.Status {
+
+	req.Log().Debug("POST")
 
 	x := req.Param("x").(int)
 	val := self.met.Counters["requestCount"].GetValue()
@@ -101,13 +108,14 @@ func TestFastHttp(t *testing.T) {
 			return
 		}
 
+/*
 		resp, err = resty.R().Post(url)
 		if log.Error(err) || resp.StatusCode() == 500 {
 			log.NewError(resp.String())
 			t.Fail()
 			return
 		}
-
+*/
 	}
 
 	time.Sleep(3 * time.Second)
