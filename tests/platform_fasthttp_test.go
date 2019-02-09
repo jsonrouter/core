@@ -33,10 +33,6 @@ func (self *TestHTTPStruct) ApiGET(req http.Request) *http.Status {
 		}
 	//}()
 
-
-	req.Log().Debug("GET2")
-
-
 	return nil
 }
 
@@ -100,7 +96,7 @@ func TestFastHttp(t *testing.T) {
 
 	log.Debug(resp.String())
 
-	for x := 0; x < 10; x+=2 {
+	for x := 0; x < 100; x+=2 {
 
 		url = fmt.Sprintf("http://localhost:%d/endpoint/%d", CONST_PORT, x)
 
