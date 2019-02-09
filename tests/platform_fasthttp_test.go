@@ -67,6 +67,7 @@ func TestFastHttp(t *testing.T) {
 	root, service := jsonrouter.New(log, s)
 
 	self := &TestHTTPStruct{
+		t: t,
 		met: root.Config.Metrics,
 	}
 
@@ -112,14 +113,13 @@ func TestFastHttp(t *testing.T) {
 			return
 		}
 
-/*
 		resp, err = resty.R().Post(url)
 		if log.Error(err) || resp.StatusCode() == 500 {
 			log.NewError(resp.String())
 			t.Fail()
 			return
 		}
-*/
+
 	}
 
 	time.Sleep(3 * time.Second)

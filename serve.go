@@ -22,8 +22,6 @@ type Headers map[string]string
 // main handler
 func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *http.Status) {
 
-	defer status.Respond(req)
-
 	met := node.Config.Metrics
 
 	met.Timers["requestTime"].Start()
@@ -32,6 +30,8 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 
 		if status == nil {
 			status = req.Respond(200, "OK")
+		} else {
+			status.Respond(req)
 		}
 
 		met.Timers["requestTime"].Update(&node.Config.MetResults)
