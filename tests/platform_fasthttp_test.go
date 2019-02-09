@@ -29,7 +29,7 @@ func (self *TestHTTPStruct) ApiGET(req http.Request) *http.Status {
 		val := self.met.Counters["requestCount"].GetValue()
 		if int(val) != (x + 1) {
 			req.Log().Debugf("GET: CORRECT VALUE IS %v NOT %v", x, int(val))
-			return self.t.Fail()
+			self.t.Fail()
 		}
 	}()
 
