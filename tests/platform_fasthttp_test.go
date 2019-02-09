@@ -24,14 +24,14 @@ func (self *TestHTTPStruct) ApiGET(req http.Request) *http.Status {
 
 	req.Log().Debug("GET")
 
-	defer func() {
+	//defer func() {
 		x := req.Param("x").(int)
 		val := self.met.Counters["requestCount"].GetValue()
 		if int(val) != (x + 1) {
 			req.Log().Debugf("GET: CORRECT VALUE IS %v NOT %v", x, int(val))
 			self.t.Fail()
 		}
-	}()
+	//}()
 
 
 	req.Log().Debug("GET2")
