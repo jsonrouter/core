@@ -16,6 +16,7 @@ import (
 )
 
 type TestHTTPStruct struct {
+	t *testing.T
 	met metrics.Metrics
 }
 
@@ -23,12 +24,15 @@ func (self *TestHTTPStruct) ApiGET(req http.Request) *http.Status {
 
 	req.Log().Debug("GET")
 
-	x := req.Param("x").(int)
-	val := self.met.Counters["requestCount"].GetValue()
-	if int(val) != (x + 1) {
-		req.Log().Debugf("GET: CORRECT VALUE IS %v NOT %v", x, int(val))
-		return req.Fail()
-	}
+	defer func() {
+		x := req.Param("x").(int)
+		val := self.met.Counters["requestCount"].GetValue()
+		if int(val) != (x + 1) {
+			req.Log().Debugf("GET: CORRECT VALUE IS %v NOT %v", x, int(val))
+			return self.t.Fail()
+		}
+	}()
+
 
 	req.Log().Debug("GET2")
 

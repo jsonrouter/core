@@ -45,9 +45,7 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 
 	}()
 
-
 	// enforce https-only if required
-
 	if node.Config.ForcedTLS {
 		if !req.IsTLS() {
 			status = req.Respond(502, "PLEASE UPGRADE TO HTTPS")
