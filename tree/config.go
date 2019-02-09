@@ -7,7 +7,7 @@ import 	(
 	"github.com/jsonrouter/core/http"
 	openapiv2 "github.com/jsonrouter/core/openapi/v2"
 	openapiv3 "github.com/jsonrouter/core/openapi/v3"
-	"github.com/chrysmore/metrics"
+	"github.com/jsonrouter/core/metrics"
 )
 
 type Config struct {

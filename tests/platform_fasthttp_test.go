@@ -6,7 +6,7 @@ import (
 	"testing"
 	//
 	"github.com/go-resty/resty"
-	"github.com/chrysmore/metrics"
+	"github.com/jsonrouter/core/metrics"
 	//
 	"github.com/jsonrouter/validation"
 	"github.com/jsonrouter/core/http"
