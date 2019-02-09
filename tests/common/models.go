@@ -1,4 +1,4 @@
-package tests
+package common
 
 type TestObject struct {
 	Hello string

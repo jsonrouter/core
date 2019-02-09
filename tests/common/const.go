@@ -1,4 +1,4 @@
-package tests
+package common
 
 const (
 	CONST_SPEC_HOST = "dummyhost"

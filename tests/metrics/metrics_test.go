@@ -1,17 +1,18 @@
 package tests
 
 import (
-	//ht "net/http"
 	"fmt"
 	"time"
-	//"github.com/jsonrouter/core/http"
+	"testing"
+	//
+	"github.com/go-resty/resty"
+	//
 	"github.com/jsonrouter/core/openapi/v2"
 	"github.com/jsonrouter/logging"
 	"github.com/jsonrouter/logging/testing"
 	"github.com/jsonrouter/platforms/fasthttp"
-	//"github.com/jsonrouter/validation"
-	"testing"
-	"github.com/go-resty/resty"
+	//
+	"github.com/jsonrouter/core/tests/common"
 )
 
 type App struct {
@@ -29,7 +30,7 @@ func TestMetrics(t *testing.T) {
 	t.Log("Serving:")
 
 	go func() {
-		if err := service.Serve(CONST_PORT); err != nil {
+		if err := service.Serve(common.CONST_PORT); err != nil {
 			t.Error(err)
 			t.Fail()
 		}
@@ -37,13 +38,13 @@ func TestMetrics(t *testing.T) {
 
 	time.Sleep(time.Second)
 
-	url := fmt.Sprintf("http://127.0.0.1:%d/metrics", CONST_PORT)
+	url := fmt.Sprintf("http://127.0.0.1:%d/metrics", common.CONST_PORT)
 
 	for i := 0; i < 10; i++ {
 		resp, err := resty.R().Get(url)
-		
-		if (resp != nil) {t.Log(resp.String())}
-			
+		if (resp != nil) {
+			t.Log(resp.String())
+		}
 		if err != nil {
 			t.Error(err)
 			t.Fail()
@@ -52,6 +53,5 @@ func TestMetrics(t *testing.T) {
 	}
 
 	time.Sleep(10 * time.Second)
-	
-}
 
+}
