@@ -6,7 +6,7 @@ import (
 	"testing"
 	//
 	"github.com/go-resty/resty"
-	//
+	"github.com/jsonrouter/core/openapi/v2"
 	"github.com/jsonrouter/validation"
 	"github.com/jsonrouter/core/tree"
 	"github.com/jsonrouter/core/http"
@@ -56,7 +56,9 @@ func TestFastHttpMetrics(t *testing.T) {
 	app := &App{}
 
 	// create routing structure
-	config := &tree.Config{}
+	config := &tree.Config{
+		Spec: openapiv2.New("localhost", "test"),
+	}
 	root := tree.NewNode(config)
 	endpoint := root.Add("/endpoint").Param(validation.Int(), "x")
 	endpoint.GET(app.ApiGET)
@@ -70,7 +72,7 @@ func TestFastHttpMetrics(t *testing.T) {
 
 	for name, fnc := range a {
 
-		app.T.Run(
+		t.Run(
 			"RUNNING TEST FOR PLATFORM - " + name,
 			func (t *testing.T) {
 

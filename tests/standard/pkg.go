@@ -1,7 +1,8 @@
 package fasthttptest
 
 import (
-	"fmt"
+	//"fmt"
+	"strconv"
 	"time"
 	"testing"
 	ht "net/http"
@@ -42,10 +43,7 @@ func TestServer(t *testing.T, node *tree.Node) *common.TestHTTPStruct {
 	go func() {
 		panic(
 			ht.ListenAndServe(
-				fmt.Sprintf(
-					":%s",
-					common.CONST_PORT_STANDARD,
-				),
+				":" + strconv.Itoa(common.CONST_PORT_STANDARD),
 				service,
 			),
 		)
