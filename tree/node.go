@@ -42,6 +42,10 @@ type Node struct {
 	sync.RWMutex
 }
 
+func (node *Node) Use(newNode *Node) {
+	node = newNode
+}
+
 func (node *Node) new(path string) *Node {
 	n := NewNode(node.Config)
 	n.Parent = node

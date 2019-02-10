@@ -1,4 +1,4 @@
-package tests
+package main
 
 import (
 	"fmt"
@@ -11,7 +11,9 @@ import (
 	"github.com/jsonrouter/core/tree"
 	"github.com/jsonrouter/core/http"
 	//
-	"github.com/jsonrouter/core/tests/fasthttp"
+	fasthttptest "github.com/jsonrouter/core/tests/fasthttp"
+	standardtest "github.com/jsonrouter/core/tests/standard"
+	appenginetest "github.com/jsonrouter/core/tests/appengine"
 	"github.com/jsonrouter/core/tests/common"
 )
 
@@ -54,7 +56,8 @@ func TestFastHttpMetrics(t *testing.T) {
 	app := &App{}
 
 	// create routing structure
-	root := &tree.Node{}
+	config := &tree.Config{}
+	root := tree.NewNode(config)
 	endpoint := root.Add("/endpoint").Param(validation.Int(), "x")
 	endpoint.GET(app.ApiGET)
 	endpoint.POST(app.ApiPOST)
@@ -73,7 +76,7 @@ func TestFastHttpMetrics(t *testing.T) {
 
 				app.TestHTTPStruct = fnc(t, root)
 
-				url := fmt.Sprintf("http://localhost:%d/openapi.spec.json", common.CONST_PORT)
+				url := fmt.Sprintf("http://localhost:%d/openapi.spec.json", common.CONST_PORT_FASTHTTP)
 
 				resp, err := resty.R().Get(url)
 				if err != nil || resp.StatusCode() == 500 {
@@ -84,7 +87,7 @@ func TestFastHttpMetrics(t *testing.T) {
 
 				for x := 0; x < 100; x+=2 {
 
-					url = fmt.Sprintf("http://localhost:%d/endpoint/%d", common.CONST_PORT, x)
+					url = fmt.Sprintf("http://localhost:%d/endpoint/%d", common.CONST_PORT_FASTHTTP, x)
 
 					resp, err := resty.R().Get(url)
 					if err != nil || resp.StatusCode() == 500 {

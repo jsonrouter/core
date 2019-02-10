@@ -20,35 +20,7 @@ type TestHTTPStruct struct {
 	met metrics.Metrics
 }
 
-func (self *TestHTTPStruct) ApiGET(req http.Request) *http.Status {
 
-	req.Log().Debug("GET")
-
-	//defer func() {
-		x := req.Param("x").(int)
-		val := self.met.Counters["requestCount"].GetValue()
-		if int(val) != (x + 1) {
-			req.Log().Debugf("GET: CORRECT VALUE IS %v NOT %v", x, int(val))
-			self.t.Fail()
-		}
-	//}()
-
-	return nil
-}
-
-func (self *TestHTTPStruct) ApiPOST(req http.Request) *http.Status {
-
-	req.Log().Debug("POST")
-
-	x := req.Param("x").(int)
-	val := self.met.Counters["requestCount"].GetValue()
-	if int(val) != (x + 2) {
-		req.Log().Debugf("POST: CORRECT VALUE IS %v", x)
-		return req.Fail()
-	}
-
-	return nil
-}
 
 func TestFastHttp(t *testing.T) {
 
