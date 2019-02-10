@@ -14,7 +14,7 @@ import (
 	"github.com/jsonrouter/core/tests/common"
 )
 
-func StartForStandard(t *testing.T, node *tree.Node) *common.TestHTTPStruct {
+func TestServer(t *testing.T, node *tree.Node) *common.TestHTTPStruct {
 
 	s := openapiv2.New(common.CONST_SPEC_HOST, common.CONST_SPEC_TITLE)
 	s.BasePath = common.CONST_SPEC_BASEPATH

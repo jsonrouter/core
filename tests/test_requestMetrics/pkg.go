@@ -59,37 +59,54 @@ func TestFastHttpMetrics(t *testing.T) {
 	endpoint.GET(app.ApiGET)
 	endpoint.POST(app.ApiPOST)
 
-	app.TestHTTPStruct = fasthttptest.StartForFastHttp(t, root)
-
-	url := fmt.Sprintf("http://localhost:%d/openapi.spec.json", common.CONST_PORT)
-
-	resp, err := resty.R().Get(url)
-	if err != nil || resp.StatusCode() == 500 {
-		t.Error(resp.String())
-		t.Fail()
-		return
+	a := map[string]func(t *testing.T, node *tree.Node) *common.TestHTTPStruct{
+		"fasthttp": fasthttptest.TestServer,
+		"appengine": appenginetest.TestServer,
+		"standard": standardtest.TestServer,
 	}
 
-	for x := 0; x < 100; x+=2 {
+	for name, fnc := range a {
 
-		url = fmt.Sprintf("http://localhost:%d/endpoint/%d", common.CONST_PORT, x)
+		app.T.Run(
+			"RUNNING TEST FOR PLATFORM - " + name,
+			func (t *testing.T) {
 
-		resp, err := resty.R().Get(url)
-		if err != nil || resp.StatusCode() == 500 {
-			t.Error(resp.String())
-			t.Fail()
-			return
-		}
+				app.TestHTTPStruct = fnc(t, root)
 
-		resp, err = resty.R().Post(url)
-		if err != nil || resp.StatusCode() == 500 {
-			t.Error(resp.String())
-			t.Fail()
-			return
-		}
+				url := fmt.Sprintf("http://localhost:%d/openapi.spec.json", common.CONST_PORT)
+
+				resp, err := resty.R().Get(url)
+				if err != nil || resp.StatusCode() == 500 {
+					t.Error(resp.String())
+					t.Fail()
+					return
+				}
+
+				for x := 0; x < 100; x+=2 {
+
+					url = fmt.Sprintf("http://localhost:%d/endpoint/%d", common.CONST_PORT, x)
+
+					resp, err := resty.R().Get(url)
+					if err != nil || resp.StatusCode() == 500 {
+						t.Error(resp.String())
+						t.Fail()
+						return
+					}
+
+					resp, err = resty.R().Post(url)
+					if err != nil || resp.StatusCode() == 500 {
+						t.Error(resp.String())
+						t.Fail()
+						return
+					}
+
+				}
+
+				time.Sleep(3 * time.Second)
+
+			},
+		)
 
 	}
-
-	time.Sleep(3 * time.Second)
 
 }
