@@ -40,7 +40,7 @@ func TestServer(t *testing.T, node *tree.Node) *common.TestHTTPStruct {
 		panic(
 			ht.ListenAndServe(
 				fmt.Sprintf(
-					":%s",
+					":%d",
 					common.CONST_PORT_APPENGINE,
 				),
 				service,
