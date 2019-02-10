@@ -12,7 +12,7 @@ import (
 	"github.com/jsonrouter/core/tests/common"
 )
 
-func StartForFastHttp(t *testing.T, node *tree.Node) {
+func StartForFastHttp(t *testing.T, node *tree.Node) *common.TestHTTPStruct {
 
 	s := openapiv2.New(common.CONST_SPEC_HOST, common.CONST_SPEC_TITLE)
 	s.BasePath = common.CONST_SPEC_BASEPATH
@@ -34,10 +34,12 @@ func StartForFastHttp(t *testing.T, node *tree.Node) {
 
 	go func() {
 		panic(
-			service.Serve(common.CONST_PORT),
+			service.Serve(common.CONST_PORT_FASTHTTP),
 		)
 	}()
 
 	// wait for router to be serving
 	time.Sleep(time.Second / 10)
+
+	return self
 }

@@ -14,7 +14,7 @@ import (
 	"github.com/jsonrouter/core/tests/common"
 )
 
-func StartForStandard(t *testing.T, node *tree.Node) {
+func StartForStandard(t *testing.T, node *tree.Node) *common.TestHTTPStruct {
 
 	s := openapiv2.New(common.CONST_SPEC_HOST, common.CONST_SPEC_TITLE)
 	s.BasePath = common.CONST_SPEC_BASEPATH
@@ -28,7 +28,7 @@ func StartForStandard(t *testing.T, node *tree.Node) {
 	if err != nil {
 		t.Error(err)
 		t.Fail()
-		return
+		return nil
 	}
 
 	self := &common.TestHTTPStruct{
@@ -44,7 +44,7 @@ func StartForStandard(t *testing.T, node *tree.Node) {
 			ht.ListenAndServe(
 				fmt.Sprintf(
 					":%s",
-					common.CONST_PORT,
+					common.CONST_PORT_STANDARD,
 				),
 				service,
 			),
@@ -53,4 +53,6 @@ func StartForStandard(t *testing.T, node *tree.Node) {
 
 	// wait for router to be serving
 	time.Sleep(time.Second / 10)
+
+	return self
 }
