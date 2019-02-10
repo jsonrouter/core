@@ -15,6 +15,11 @@ import (
 	"github.com/jsonrouter/platforms/fasthttp"
 )
 
+type TestHTTPStruct struct {
+	t *testing.T
+	met metrics.Metrics
+}
+
 func (self *TestHTTPStruct) ApiGET(req http.Request) *http.Status {
 
 	req.Log().Debug("GET")
