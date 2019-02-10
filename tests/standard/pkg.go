@@ -8,12 +8,13 @@ import (
 	//
 	"github.com/jsonrouter/core/tree"
 	"github.com/jsonrouter/core/openapi/v2"
-	"github.com/jsonrouter/platforms/appengine"
+	"github.com/jsonrouter/platforms/standard"
+	"github.com/jsonrouter/logging/testing"
 	//
 	"github.com/jsonrouter/core/tests/common"
 )
 
-func StartForAppEngine(t *testing.T, node *tree.Node) {
+func StartForStandard(t *testing.T, node *tree.Node) {
 
 	s := openapiv2.New(common.CONST_SPEC_HOST, common.CONST_SPEC_TITLE)
 	s.BasePath = common.CONST_SPEC_BASEPATH
@@ -21,7 +22,9 @@ func StartForAppEngine(t *testing.T, node *tree.Node) {
 	s.Info.Contact.Email = common.CONST_SPEC_EMAIL
 	s.Info.License.URL = common.CONST_SPEC_URL
 
-	service, err := jsonrouter.New(s)
+	log := logs.NewClient().NewLogger()
+
+	service, err := jsonrouter.New(log, s)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
