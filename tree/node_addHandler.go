@@ -1,6 +1,7 @@
 package tree
 
 import (
+	"reflect"
 	"strings"
 	"strconv"
 	//
@@ -14,6 +15,11 @@ var opCounter int
 func (node *Node) addHandler(method string, handler *Handler) {
 
 	switch spec := node.Config.Spec.(type) {
+
+	case nil:
+
+		panic("THE API SPEC OBJECT IS NIL!")
+
 	case *openapiv2.Spec:
 
 		if spec.Paths == nil {
@@ -77,7 +83,7 @@ func (node *Node) addHandler(method string, handler *Handler) {
 			},
 		}
 
-		
+
 
 		path := handler.Path("")
 		if spec.Paths[path] == nil {
@@ -85,8 +91,8 @@ func (node *Node) addHandler(method string, handler *Handler) {
 		}
 		spec.Paths[path][strings.ToLower(method)] = operation
 
-		default:
-			panic("INVALID TYPE FOR HTTP METHOD SWITCH")
+	default:
+		panic("INVALID TYPE FOR THE PROVIDED SPEC: "+reflect.TypeOf(node.Config.Spec).String())
 
 	}
 
