@@ -91,6 +91,7 @@ func (ti *MockRequest) ServeFile(s string) { }
 func (ti *MockRequest) HttpError(s string, x int) { }
 
 func (ti *MockRequest) Writer() io.Writer { return &rW{} }
+func (ti *MockRequest) WriteString(s string) { }
 func (ti *MockRequest) Write(b []byte) { }
 
 func (ti *MockRequest) Fail() *Status { return Fail() }

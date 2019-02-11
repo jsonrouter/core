@@ -5,6 +5,7 @@ import (
 	"strings"
 	"strconv"
 	//
+	"github.com/jsonrouter/core/http"
 	"github.com/jsonrouter/core/openapi/v2"
 	"github.com/jsonrouter/core/openapi/v3"
 )
@@ -39,17 +40,17 @@ func (node *Node) addHandler(method string, handler *Handler) {
 
 		// http 500 status
 		s500 := pathMethod.Response(500)
-		s500.Description = CONST_HTTP_STATUS_MSG_500
+		s500.Description = http.CONST_HTTP_STATUS_MSG_500
 
 		if handler.Method != "GET" {
 			// http 400 status
 			s400 := pathMethod.Response(400)
-			s400.Description = CONST_HTTP_STATUS_MSG_400
+			s400.Description = http.CONST_HTTP_STATUS_MSG_400
 		}
 
 		// http 200 status
 		s200 := pathMethod.Response(200)
-		s200.Description = CONST_HTTP_STATUS_MSG_200
+		s200.Description = http.CONST_HTTP_STATUS_MSG_200
 		s200.Schema = &openapiv2.StatusSchema{
 			Type: "object",
 		}
