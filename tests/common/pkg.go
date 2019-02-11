@@ -9,7 +9,8 @@ import (
 
 type TestHTTPStruct struct {
 	T *testing.T
-	Met metrics.Metrics
+	Met *metrics.Metrics
+	Port int
 }
 
 func dummyHandler(req http.Request) *http.Status {

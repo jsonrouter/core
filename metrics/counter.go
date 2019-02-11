@@ -1,7 +1,6 @@
 package metrics
 
 import (
-
 )
 
 type Counter struct {

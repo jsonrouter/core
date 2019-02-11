@@ -43,7 +43,21 @@ type Node struct {
 }
 
 func (node *Node) Use(newNode *Node) {
-	node = newNode
+	//node.Config = newNode.Config
+	//node.Parent = newNode.Parent
+	node.Path = newNode.Path
+	node.Parameter = newNode.Parameter
+	node.Module = newNode.Module
+	node.Modules = newNode.Modules
+	//node.SecurityModule = newNode.SecurityModule
+	node.Validations = newNode.Validations
+	node.spec = newNode.spec
+	node.Routes = newNode.Routes
+	node.Headers = newNode.Headers
+	node.Methods = newNode.Methods
+	node.RequestParams = newNode.RequestParams
+	node.Modules = newNode.Modules
+	node.Validations = newNode.Validations
 }
 
 func (node *Node) new(path string) *Node {

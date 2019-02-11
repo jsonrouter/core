@@ -26,7 +26,8 @@ func TestServer(t *testing.T, node *tree.Node) *common.TestHTTPStruct {
 
 	self := &common.TestHTTPStruct{
 		T: t,
-		Met: root.Config.Metrics,
+		Met: &root.Config.Metrics,
+		Port: common.CONST_PORT_FASTHTTP,
 	}
 
 	// make the supplied routing work on this root node
