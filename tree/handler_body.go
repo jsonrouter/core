@@ -67,35 +67,34 @@ func (handler *Handler) updateSpecParams(required bool, payload validation.Paylo
 
 	case *openapiv3.Spec:
 
-		path := spec.Paths[handler.Path(spec.BasePath)]
-		pathMethod := path[strings.ToLower(handler.Method)]
-		ref := handler.Ref(spec.BasePath)
+		pathString := handler.Node.FullPath()
+		path := spec.Paths[pathString]
+		operation := path[strings.ToLower(handler.Method)]
+		//ref := fmt.Sprintf("#/components/requestBodies/%v", pathString[1:])
 
-		if spec.Definitions[ref] == nil {
-			spec.Definitions[ref] = &openapiv3.Definition{
-				Type: "object",
-				Properties: map[string]openapiv3.Parameter{},
+		if spec.Components.RequestBodies[pathString] == nil {
+			spec.Components.RequestBodies[pathString] = &openapiv3.RequestBody{
+				Required: required,
+				Description: handler.Descr,
+				Content: map[string]*openapiv3.MediaType{
+					"application/json": &openapiv3.MediaType{
+						Schema: &openapiv3.Schema{
+							Properties: map[string]*openapiv3.Schema{},
+						},
+					},
+				},
 			}
 		}
 
 		for k, v := range payload {
-			handler.updateSpecParam(required, spec.Definitions[ref], k, v)
+			handler.updateSpecParam(required, spec.Components.RequestBodies[pathString], k, v)
 		}
 
 		// only create the definition ONCE if it has contents
-		if handler.spec.addedBodyDefinition {
-			if len(spec.Definitions[ref].Properties) > 0 {
-				pathMethod.Parameters = append(
-					pathMethod.Parameters,
-					&openapiv3.Parameter{
-						Name: "body",
-						In: "body",
-						Description: handler.Descr,
-						Schema: &openapiv3.Schema{
-							Ref: ref,
-						},
-					},
-				)
+		if !handler.spec.addedBodyDefinition {
+			if len(spec.Components.RequestBodies[pathString].Content["application/json"].Schema.Properties) > 0 {
+				operation.RequestBody = spec.Components.RequestBodies[pathString]
+				//operation.RequestBody.Ref = ref
 			}
 			handler.spec.addedBodyDefinition = true
 		}
@@ -158,27 +157,21 @@ func (handler *Handler) updateSpecParam(required bool, def interface{}, key stri
 
 		definition.Properties[key] = param
 
-	case *openapiv3.Definition:
+	case *openapiv3.RequestBody:
 
-		param := openapiv3.Parameter{}
-		param.Description = cfg.DescriptionValue
-		param.Minimum = pointerFloat64(cfg.Min)
-		param.Maximum = pointerFloat64(cfg.Max)
-		param.Default = cfg.DefaultValue
-		param.Format = cfg.Type
-		param.Type = openapiv3.Type(cfg.Model)
-//		param.Required = required
+		obj := &openapiv3.Schema{}
 
-		if required == true {
-			definition.Required = append(
-				definition.Required,
-				key,
-			)
-		}
+		obj.Description = cfg.DescriptionValue
+		obj.Minimum = int(cfg.Min)
+		obj.Maximum = int(cfg.Max)
+		obj.Default = fmt.Sprintf("%v", cfg.DefaultValue)
+		obj.Format = cfg.Type
+		obj.Type = openapiv3.Type(cfg.Model)
+		obj.Required = required
 
-		definition.Properties[key] = param
+		definition.Content["application/json"].Schema.Properties[key] = obj
 
-	default: panic("INVALID SPEC TYPE")
+		default: panic("INVALID SPEC TYPE")
 	}
 
 }
@@ -209,22 +202,24 @@ func (handler * Handler) updateParameters() {
 
 	case *openapiv3.Spec:
 
-		path := spec.Paths[handler.Path(spec.BasePath)]
-		pathMethod := path[strings.ToLower(handler.Method)]
+		path := spec.Paths[handler.Node.FullPath()]
+		operation := path[strings.ToLower(handler.Method)]
 
 		for _, cfg := range handler.Node.Validations {
 			param := &openapiv3.Parameter{}
 			param.In = "path"
 			param.Name = cfg.Keys[0]
 			param.Description = cfg.DescriptionValue
-			param.Type = cfg.Type
-			minLength := int64(cfg.Min)
-			maxLength := int64(cfg.Max)
-			param.MinLength = &minLength
-			param.MaxLength = &maxLength
+			minLength := int(cfg.Min)
+			maxLength := int(cfg.Max)
+			param.Schema = &openapiv3.Schema{}
+			param.Schema.Type = cfg.Type
+			param.Schema.Minimum = minLength
+			param.Schema.Maximum = maxLength
+			
 			param.Required = true
 
-			pathMethod.Parameters = append(pathMethod.Parameters, param)
+			operation.Parameters = append(operation.Parameters, param)
 		}
 		default: panic("INVALID SPEC TYPE")
 	}

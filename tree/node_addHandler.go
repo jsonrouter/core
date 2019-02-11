@@ -1,6 +1,7 @@
 package tree
 
 import (
+	"reflect"
 	"strings"
 	"strconv"
 	//
@@ -15,6 +16,11 @@ var opCounter int
 func (node *Node) addHandler(method string, handler *Handler) {
 
 	switch spec := node.Config.Spec.(type) {
+
+	case nil:
+
+		panic("THE API SPEC OBJECT IS NIL!")
+
 	case *openapiv2.Spec:
 
 		if spec.Paths == nil {
@@ -61,29 +67,33 @@ func (node *Node) addHandler(method string, handler *Handler) {
 			spec.Paths = make(map[string]openapiv3.Path)
 		}
 
-		pathMethod := &openapiv3.PathMethod{
-			Produces: []string{
-				"application/json",
-			},
+		operation := &openapiv3.Operation{
+			Summary: "",
 			Description: "Serves the OpenAPI spec JSON",
-			Responses: openapiv3.Responses{
-				Code200: &openapiv3.StatusCode{
-					Description: "Done OK",
-					Schema: openapiv3.StatusSchema{
-						Type: "object",
-					},
+			Parameters: []*openapiv3.Parameter{},
+			Responses:  map[int]*openapiv3.Response{
+				200: &openapiv3.Response{
+					Description: "OK!",
+				},
+				500: &openapiv3.Response{
+					Description: "Unknown Server Error",
+				},
+				400: &openapiv3.Response{
+ 					Description: "Bad Request",
 				},
 			},
 		}
 
-		path := handler.Path(spec.BasePath)
+
+
+		path := handler.Path("")
 		if spec.Paths[path] == nil {
 			spec.Paths[path] = openapiv3.Path{}
 		}
-		spec.Paths[path][strings.ToLower(method)] = pathMethod
+		spec.Paths[path][strings.ToLower(method)] = operation
 
-		default:
-			panic("INVALID TYPE FOR HTTP METHOD SWITCH")
+	default:
+		panic("INVALID TYPE FOR THE PROVIDED SPEC: "+reflect.TypeOf(node.Config.Spec).String())
 
 	}
 

@@ -2,7 +2,7 @@ package tests
 
 import (
 	"fmt"
-	"errors"
+	//"errors"
 	"testing"
 	"encoding/json"
 	//
@@ -15,7 +15,7 @@ import (
 func TestSpecV3(t *testing.T) {
 
 	s := openapiv3.New(CONST_SPEC_HOST, CONST_SPEC_TITLE)
-	s.BasePath = CONST_SPEC_BASEPATH
+	//s.BasePath = CONST_SPEC_BASEPATH
 	s.Info.Contact.URL = CONST_SPEC_URL
 	s.Info.Contact.Email = CONST_SPEC_EMAIL
 	s.Info.License.URL = CONST_SPEC_URL
@@ -33,7 +33,7 @@ func TestSpecV3(t *testing.T) {
 
 	//req := http.NewMockRequest("", "")
 	spec := root.Config.Spec.(*openapiv3.Spec)
-
+/*
 	t.Run(
 		"Test the spec",
 		func (t *testing.T) {
@@ -77,7 +77,7 @@ func TestSpecV3(t *testing.T) {
 
 		},
 	)
-
+*/
 	b, _ := json.Marshal(spec)
 	fmt.Println(string(b))
 }
