@@ -7,6 +7,7 @@ import 	(
 	"net/http"
 	//
 	"github.com/jsonrouter/logging"
+	json "github.com/json-iterator/go"
 )
 
 type Request interface {
@@ -40,6 +41,7 @@ type Request interface {
 	HttpError(string, int)
 	Writer() io.Writer
 	Write([]byte)
+	WriteString(string)
 	Fail() *Status
 	Respond(args ...interface{}) *Status
 	// logging
@@ -57,7 +59,9 @@ func Fail() *Status {
 func Respond(args ...interface{}) *Status {
 
 	var ok bool
-	s := &Status{}
+	s := &Status{
+		Code: 200,
+	}
 
 	l := len(args)
 
@@ -65,8 +69,28 @@ func Respond(args ...interface{}) *Status {
 
 		case 1:
 
-			s.Value = args[0]
-			s.Code = 200
+			switch args[0].(type) {
+
+			case nil:
+				s.Value = args[0]
+			case string:
+				s.Value = args[0]
+			case []byte:
+				s.Value = args[0]
+			case [][]byte:
+				s.Value = args[0]
+
+			default:
+
+				b, err := json.Marshal(args[0])
+				if err != nil {
+					return Respond(500, CONST_HTTP_STATUS_MSG_500)
+				}
+
+				s.Value = b
+
+			}
+
 			return s
 
 		case 2, 3:

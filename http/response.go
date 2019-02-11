@@ -3,7 +3,6 @@ package http
 import (
 	"strconv"
 	"reflect"
-	"encoding/json"
 )
 
 type Status struct {
@@ -35,7 +34,7 @@ func (status *Status) Respond(req Request) {
 
 		case string:
 
-			req.Write([]byte(v))
+			req.WriteString(v)
 
 		case []byte:
 
@@ -49,13 +48,7 @@ func (status *Status) Respond(req Request) {
 
 		default:
 
-			req.SetResponseHeader("Content-Type", "application/json")
-			b, err := json.Marshal(status.Value)
-			if req.Log().Error(err) {
-				status.Code = 500
-				break
-			}
-			req.Write(b)
+			panic("THIS CODE SHOULD BE UNREACHABLE")
 
 	}
 

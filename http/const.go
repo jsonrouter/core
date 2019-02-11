@@ -1,4 +1,4 @@
-package tree
+package http
 
 const (
 	CONST_HTTP_STATUS_MSG_500 = "UNEXPECTED INTERNAL ERROR, CHECK BACK LATER!"
