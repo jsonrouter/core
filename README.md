@@ -27,7 +27,7 @@ Allows very complex routing without creating a mess.
 
 ## http.Request request context
 
-This package uses an interface to allow usage of different http implementations such as net/http package or valyala/fasthttp package. Unfortunately, fasthttp doesn't provide API identical to net/http, so a common interface type has been created to allow GF to operate with either dependency.
+This package uses an interface to allow usage of different http implementations such as net/http package or valyala/fasthttp package. Unfortunately, fasthttp doesn't provide API identical to net/http, so a common interface type has been created to allow JSONrouter to operate with either dependency.
 
 If you are using net/http the request context (instance of RequestInterface) allows access to the http.ResponseWriter & *http.Request via the .Res() and .R() functions respectively.
 
