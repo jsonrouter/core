@@ -1,7 +1,7 @@
 package metrics
 
 import (
-
+	"sync"
 )
 
 type MetricsInterface struct {
@@ -14,9 +14,13 @@ type Metrics struct {
 	MultiCounters map[string]*MultiCounter
 	//Config *config
 	Results map[string]interface{}
+	sync.RWMutex
 }
 
 func (self *MultiCounter) Update(results *map[string]interface{}) error {
+	self.Lock()
+	defer self.Unlock()
+
 	res := *results
 
 	r := make(map[string]interface{})
