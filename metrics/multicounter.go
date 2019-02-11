@@ -11,28 +11,36 @@ type MultiCounter struct {
 	sync.RWMutex
 }
 
-func (self *MultiCounter) Reset(counter string) {
+func (self *MultiCounter) Get(counter string) (c *Counter) {
+	// if counter exists do a read lock and return counter
+	self.RLock()
+	c = self.Counters[counter]
+	self.RUnlock()
+	if c != nil {
+		return c
+	}
+	// lock the whole process so it is atomic
 	self.Lock()
-	defer self.Unlock()
-
-	if self.Counters[counter]== nil {
-		self.Counters[counter] = &Counter{
+	c = self.Counters[counter]
+	if c == nil {
+		// init the counter
+		c = &Counter{
 			Name : counter,
 		}
+		self.Counters[counter] = c
 	}
+	// unlock before we call any other functions
+	self.Unlock()
 
-	self.Counters[counter].Reset()
+	return c
+}
+
+func (self *MultiCounter) Reset(counter string) {
+	c := self.Get(counter)
+	c.Reset()
 }
 
 func (self *MultiCounter) Increment(counter string) {
-	self.Lock()
-	defer self.Unlock()
-
-	if _, ok := self.Counters[counter]; !ok {
-		self.Counters[counter] = &Counter{
-			Name : counter,
-		}
-	}
-
-	self.Counters[counter].Increment()
+	c := self.Get(counter)
+	c.Increment()
 }
