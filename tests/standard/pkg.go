@@ -13,7 +13,7 @@ import (
 	"github.com/jsonrouter/logging/testing"
 	//
 	"github.com/jsonrouter/core/tests/common"
-)
+)   
 
 func TestServer(t *testing.T, node *tree.Node) *common.TestHTTPStruct {
 
@@ -40,9 +40,7 @@ func TestServer(t *testing.T, node *tree.Node) *common.TestHTTPStruct {
 
 	// make the supplied routing work on this root node
 	service.Node.Use(node)
-	for f := range service.Node.Routes{
-		fmt.Println(f)
-	}
+	
 	go func() {
 		panic(
 			ht.ListenAndServe(
