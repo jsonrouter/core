@@ -5,7 +5,7 @@ import (
 	"github.com/jsonrouter/validation"
 )
 
-func testTree(root *tree.Node) {
+func TestTree(root *tree.Node) {
 
 	api := root.Add(
 		CONST_SPEC_BASEPATH,
