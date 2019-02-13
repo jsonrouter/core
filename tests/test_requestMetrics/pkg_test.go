@@ -63,6 +63,7 @@ func TestFastHttpMetrics(t *testing.T) {
 
 	// create routing structure
 	root, _ := jsonrouter.New(logs.NewClient().NewLogger("Server"), openapiv2.New("localhost", "test"))
+	
 	endpoint := root.Add("/endpoint").Param(validation.Int(), "x")
 	endpoint.GET(app.ApiGET)
 	endpoint.POST(app.ApiPOST)
