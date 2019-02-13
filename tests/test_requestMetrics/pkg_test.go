@@ -32,7 +32,7 @@ func (app *App) ApiGET(req http.Request) *http.Status {
 
 		val := app.Met.Counters["requestCount"].GetValue()
 
-		if int(val) != (x + 1) {
+		if int(val) != (x) {
 			req.Log().Debugf("GET: CORRECT VALUE IS %v NOT %v", x, int(val))
 			
 			app.T.Fail()
@@ -49,7 +49,7 @@ func (app *App) ApiPOST(req http.Request) *http.Status {
 	x := req.Param("x").(int)
 	val := app.Met.Counters["requestCount"].GetValue()
 
-	if int(val) != (x + 2) {
+	if int(val) != (x + 1) {
 		req.Log().Debugf("POST: CORRECT VALUE IS %v", x)
 		return req.Fail()
 	}
@@ -81,20 +81,10 @@ func TestFastHttpMetrics(t *testing.T) {
 
 				app.TestHTTPStruct = fnc(t, root)
 				app.Met = app.TestHTTPStruct.Met
-				url := fmt.Sprintf("http://localhost:%d/openapi.spec.json", app.TestHTTPStruct.Port)
-
-				//url := fmt.Sprintf("http://localhost:%d/metrics", app.TestHTTPStruct.Port)
-
-				resp, err := resty.R().Get(url)
-				if err != nil || resp.StatusCode() == 500 {
-					t.Error(resp.String())
-					t.Fail()
-					return
-				}
 
 				for x := 0; x < 100; x+=2 {
 
-					url = fmt.Sprintf("http://localhost:%d/endpoint/%d", app.TestHTTPStruct.Port, x)
+					url := fmt.Sprintf("http://localhost:%d/endpoint/%d", app.TestHTTPStruct.Port, x)
 
 					resp, err := resty.R().Get(url)
 					if err != nil || resp.StatusCode() == 500 {

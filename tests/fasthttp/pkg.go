@@ -31,7 +31,9 @@ func TestServer(t *testing.T, node *tree.Node) *common.TestHTTPStruct {
 	}
 
 	// make the supplied routing work on this root node
-	root.Use(node)
+	if node != nil {
+		root.Use(node)
+	}
 
 	go func() {
 		panic(

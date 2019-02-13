@@ -6,6 +6,7 @@ import (
 	"github.com/jsonrouter/core/http"
 	"github.com/jsonrouter/core/tree"
 	//"github.com/jsonrouter/core/metrics"
+	"fmt"
 )
 
 const	(
@@ -23,7 +24,7 @@ type Headers map[string]string
 func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *http.Status) {
 
 	met := node.Config.Metrics
-
+fmt.Println("mh begin")
 	met.Timers["requestTime"].Start()
 
 	defer func(){
@@ -34,17 +35,22 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 			status.Respond(req)
 		}
 
-		met.Timers["requestTime"].Update(&node.Config.MetResults)
-		met.Timers["requestTime"].Stop()
-
-		met.MultiCounters["requestMethods"].Update(&node.Config.MetResults)
 		met.MultiCounters["requestMethods"].Increment(req.Method())
+		met.MultiCounters["requestMethods"].Update(&node.Config.Metrics.Results)
 
-		met.MultiCounters["responseCodes"].Update(&node.Config.MetResults)
 		met.MultiCounters["responseCodes"].Increment(strconv.Itoa(status.Code))
+		met.MultiCounters["responseCodes"].Update(&node.Config.Metrics.Results)
 
-		met.Counters["requestCount"].Update(&node.Config.MetResults)
 		met.Counters["requestCount"].Increment()
+		met.Counters["requestCount"].Update(&node.Config.Metrics.Results)
+		
+		met.Timers["requestTime"].Stop()
+		met.Timers["requestTime"].Update(&node.Config.Metrics.Results)
+
+		g := met.Counters["requestCount"].GetValue()
+		
+		fmt.Println(g)
+		fmt.Println(&met.Counters)
 
 	}()
 

@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"sync"
+	"fmt"
 )
 
 type Counter struct {
@@ -29,6 +30,7 @@ func (self *Counter) Increment() {
 }
 
 func (self *Counter) Update(results *map[string]interface{}) error {
+fmt.Println("Update c")
 	self.Lock()
 	defer self.Unlock()
 	res := *results

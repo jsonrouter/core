@@ -7,16 +7,18 @@ import (
 	//
 	"github.com/go-resty/resty"
 	//
-	"github.com/jsonrouter/core/openapi/v2"
+	//"github.com/jsonrouter/core/openapi/v2"
 	"github.com/jsonrouter/logging"
 	"github.com/jsonrouter/logging/testing"
-	"github.com/jsonrouter/platforms/fasthttp"
+	//"github.com/jsonrouter/platforms/standard"
+	fasthttptest "github.com/jsonrouter/core/tests/fasthttp"
 	//
 	"github.com/jsonrouter/core/tests/common"
 )
 
 type App struct {
 	logger logging.Logger
+	*common.TestHTTPStruct
 }
 
 func TestMetrics(t *testing.T) {
@@ -25,20 +27,13 @@ func TestMetrics(t *testing.T) {
 		logger: logs.NewClient().NewLogger("Server"),
 	}
 
-	_, service := jsonrouter.New(app.logger, openapiv2.New("localhost", "test"))
-
 	t.Log("Serving:")
 
-	go func() {
-		if err := service.Serve(common.CONST_PORT); err != nil {
-			t.Error(err)
-			t.Fail()
-		}
-	}()
+	app.TestHTTPStruct = fasthttptest.TestServer(t, nil)
 
 	time.Sleep(time.Second)
 
-	url := fmt.Sprintf("http://127.0.0.1:%d/metrics", common.CONST_PORT)
+	url := fmt.Sprintf("http://localhost:%d/metrics", common.CONST_PORT_FASTHTTP)
 
 	for i := 0; i < 10; i++ {
 		resp, err := resty.R().Get(url)

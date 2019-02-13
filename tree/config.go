@@ -3,6 +3,7 @@ package tree
 import 	(
 	"sync"
 	"time"
+	"fmt"
 	"github.com/jsonrouter/logging"
 	"github.com/jsonrouter/core/http"
 	openapiv2 "github.com/jsonrouter/core/openapi/v2"
@@ -36,7 +37,8 @@ func (config *Config) SpecHandler(req http.Request) *http.Status {
 
 func (config *Config) MetricsHandler(req http.Request) *http.Status {
 	time.Sleep(10 * time.Millisecond)
-	return req.Respond(config.MetResults)
+	fmt.Println(&config.Metrics.Counters)
+	return req.Respond(config.Metrics.Results)
 }
 
 func (config *Config) NoCache() {
