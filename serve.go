@@ -26,6 +26,7 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 	met := node.Config.Metrics
 
 	met.Timers["requestTime"].Start()
+	met.BenchMarks["requestMethodsBench"].StartTimer(req.Method())
 
 	defer func(){
 
@@ -47,6 +48,8 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 		met.Timers["requestTime"].Stop()
 		met.Timers["requestTime"].Update(&node.Config.Metrics.Results)
 
+		met.BenchMarks["requestMethodsBench"].StopTimer(req.Method())
+		met.BenchMarks["requestMethodsBench"].Update(&node.Config.Metrics.Results)
 	}()
 
 	// enforce https-only if required

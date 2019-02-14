@@ -2,8 +2,9 @@ package tree
 
 import 	(
 	"sync"
-	"time"
-	"fmt"
+	//"time"
+	"encoding/json"
+	//"fmt"
 	"github.com/jsonrouter/logging"
 	"github.com/jsonrouter/core/http"
 	openapiv2 "github.com/jsonrouter/core/openapi/v2"
@@ -36,9 +37,13 @@ func (config *Config) SpecHandler(req http.Request) *http.Status {
 }
 
 func (config *Config) MetricsHandler(req http.Request) *http.Status {
-	time.Sleep(10 * time.Millisecond)
-	fmt.Println(&config.Metrics.Counters)
-	return req.Respond(config.Metrics.Results)
+
+	res, err := json.Marshal(config.Metrics.Results)
+	if err != nil {
+		return req.Fail()
+	}
+
+	return req.Respond(res)
 }
 
 func (config *Config) NoCache() {

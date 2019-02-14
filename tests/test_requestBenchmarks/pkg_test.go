@@ -2,16 +2,16 @@ package main
 
 import (
 	"fmt"
-	"encoding/json"
+	
 	"time"
 	"testing"
-	//
+	"encoding/json"
 	"github.com/go-resty/resty"
 	"github.com/jsonrouter/core/openapi/v2"
 	"github.com/jsonrouter/validation"
 	"github.com/jsonrouter/core/tree"
 	"github.com/jsonrouter/core/http"
-	"github.com/jsonrouter/core/metrics"
+	//"github.com/jsonrouter/core/metrics"
 	"github.com/jsonrouter/platforms/fasthttp"
 	"github.com/jsonrouter/logging/testing"
 	
@@ -23,7 +23,7 @@ import (
 
 type App struct {
 	*common.TestHTTPStruct
-	metrics *metrics.Metrics
+	
 }
 
 func (app *App) ApiGET(req http.Request) *http.Status {
@@ -41,26 +41,7 @@ func (app *App) ApiPOST(req http.Request) *http.Status {
 
 func TestFastHttpMetrics(t *testing.T) {
 
-	app := &App {
-		metrics: &metrics.Metrics{
-			BenchMarks: map[string]*metrics.BenchMark{
-				"RequestMethods": &metrics.BenchMark {
-					Name: "RequestMethods",
-					Timers: map[string]*metrics.Timer{
-						"GET": &metrics.Timer{
-							Name : "GET",
-							BufferSize : 1000,
-						},
-						"POST": &metrics.Timer{
-							Name : "POST",
-							BufferSize : 1000,
-						},
-					},
-				},
-			},
-		Results: map[string]interface{}{},
-		},
-	}
+	app := &App {}
 
 
 	// create routing structure
@@ -88,10 +69,7 @@ func TestFastHttpMetrics(t *testing.T) {
 				url := fmt.Sprintf("http://localhost:%d/endpoint/0", app.TestHTTPStruct.Port)
 
 				for x := 0; x < 1000; x+=1 {
-
-					app.metrics.BenchMarks["RequestMethods"].StartTimer("GET")
 					resp, err := resty.R().Get(url)
-					app.metrics.BenchMarks["RequestMethods"].StopTimer("GET")
 					
 					if err != nil || resp.StatusCode() == 500 {
 						t.Error(resp.String())
@@ -101,9 +79,7 @@ func TestFastHttpMetrics(t *testing.T) {
 				}
 
 				for x := 0; x < 1000; x+=1 {
-					app.metrics.BenchMarks["RequestMethods"].StartTimer("POST")
 					resp, err := resty.R().Post(url)
-					app.metrics.BenchMarks["RequestMethods"].StopTimer("POST")
 					
 					if err != nil || resp.StatusCode() == 500 {
 						t.Error(resp.String())
@@ -113,13 +89,15 @@ func TestFastHttpMetrics(t *testing.T) {
 				}
 
 				time.Sleep(3 * time.Second)
-				app.metrics.BenchMarks["RequestMethods"].Update(&app.metrics.Results)
-
-				res, err := json.Marshal(app.metrics.Results)
-				if err != nil {
-					t.Log(err)
-					t.Fail()
-				} 
+				/*url = fmt.Sprintf("http://localhost:%d/metrics", app.TestHTTPStruct.Port)
+				 resp, err := resty.R().Post(url)
+					if err != nil || resp.StatusCode() == 500 {
+						t.Error(resp.String())
+						t.Fail()
+						return
+					}
+				*/
+				res, _ := json.Marshal(app.TestHTTPStruct.Met.Results)
 				fmt.Println(string(res))
 			},
 		)

@@ -11,13 +11,15 @@ type BenchMark struct {
 }
 
 func (self *BenchMark) StartTimer(timer string) {
-	if self.Timers[timer] != nil {
+	t := self.Timers[timer] 
+	if t != nil {
 		self.Timers[timer].Start()
 	}	
 }
 
 func (self *BenchMark) StopTimer(timer string) {
-	if self.Timers[timer] != nil {
+	t := self.Timers[timer] 
+	if t != nil {
 		self.Timers[timer].Stop()
 	}
 }
