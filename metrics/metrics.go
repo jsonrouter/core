@@ -12,26 +12,19 @@ type Metrics struct {
 	Timers map[string]*Timer
 	Counters map[string]*Counter
 	MultiCounters map[string]*MultiCounter
+	BenchMarks map[string]*BenchMark
 	//Config *config
 	Results map[string]interface{}
 	sync.RWMutex
 }
 
-func (self *MultiCounter) Update(results *map[string]interface{}) error {
-	self.Lock()
-	defer self.Unlock()
+func sum (vals ...uint64) uint64 {
 
-	res := *results
-
-	r := make(map[string]interface{})
-
-	for name, counter := range self.Counters {
-		//n := self.Name + ":" + name
-		//res[n] = counter.t
-		r[name] = counter.t
+	var sum uint64
+	
+	for _, val := range vals {
+		sum += val
 	}
-
-	res[self.Name] = r
-
-	return nil
+	
+	return sum
 }

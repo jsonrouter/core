@@ -44,3 +44,21 @@ func (self *MultiCounter) Increment(counter string) {
 	c := self.Get(counter)
 	c.Increment()
 }
+
+func (self *MultiCounter) Update(results *map[string]interface{}) error {
+	self.Lock()
+	defer self.Unlock()
+
+	res := *results
+
+	r := make(map[string]interface{})
+
+	for _, counter := range self.Counters {
+		//r[name] = counter.t
+		counter.Update(&r)
+	}
+
+	res[self.Name] = r
+
+	return nil
+}

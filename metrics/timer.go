@@ -60,13 +60,4 @@ func (self *Timer) Update(results *map[string]interface{}) error {
 	return nil
 }
 
-func sum (vals ...uint64) uint64 {
 
-	var sum uint64
-	
-	for _, val := range vals {
-		sum += val
-	}
-	
-	return sum
-}
