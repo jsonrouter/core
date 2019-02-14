@@ -85,7 +85,7 @@ func TestFastHttpMetrics(t *testing.T) {
 				app.TestHTTPStruct = fnc(t, root)
 				app.Met = app.TestHTTPStruct.Met
 
-				url := fmt.Sprintf("http://localhost:%d/endpoint/%d", app.TestHTTPStruct.Port, x)
+				url := fmt.Sprintf("http://localhost:%d/endpoint/0", app.TestHTTPStruct.Port)
 
 				for x := 0; x < 1000; x+=1 {
 
@@ -100,9 +100,9 @@ func TestFastHttpMetrics(t *testing.T) {
 					}
 				}
 
-				for x = 0; x < 1000; x+=1 {
+				for x := 0; x < 1000; x+=1 {
 					app.metrics.BenchMarks["RequestMethods"].StartTimer("POST")
-					resp, err = resty.R().Post(url)
+					resp, err := resty.R().Post(url)
 					app.metrics.BenchMarks["RequestMethods"].StopTimer("POST")
 					
 					if err != nil || resp.StatusCode() == 500 {
@@ -111,8 +111,6 @@ func TestFastHttpMetrics(t *testing.T) {
 						return
 					}
 				}
-
-
 
 				time.Sleep(3 * time.Second)
 				app.metrics.BenchMarks["RequestMethods"].Update(&app.metrics.Results)
