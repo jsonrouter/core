@@ -37,7 +37,7 @@ func (self *Timer) Start() error {
 				return
 			default:
 				atomic.AddUint64(&self.ms, 1)
-				time.Sleep(time.Microsecond)
+				time.Sleep(time.Nanosecond)
 			}
 		}
 	
