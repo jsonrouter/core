@@ -97,7 +97,7 @@ func TestFastHttpMetrics(t *testing.T) {
 						return
 					}
 				*/
-				res, _ := json.Marshal(app.TestHTTPStruct.Met.Results)
+				res, _ := json.Marshal(app.TestHTTPStruct.Met.Results["methodsBenchMark"])
 				fmt.Println(string(res))
 			},
 		)
