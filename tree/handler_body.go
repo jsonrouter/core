@@ -10,7 +10,7 @@ import (
 	"github.com/jsonrouter/core/openapi/v3"
 )
 
-// Applies model which describes required request payload fields
+// Required applies model which describes required request payload fields
 func (handler *Handler) Required(objects ...validation.Payload) *Handler {
 	for _, object := range objects {
 		handler.updateSpecParams(true, object)
@@ -18,7 +18,7 @@ func (handler *Handler) Required(objects ...validation.Payload) *Handler {
 	return handler
 }
 
-// Applies model which describes optional request payload fields
+// Optional applies model which describes optional request payload fields
 func (handler *Handler) Optional(objects ...validation.Payload) *Handler {
 	for _, object := range objects {
 		handler.updateSpecParams(false, object)
@@ -176,7 +176,7 @@ func (handler *Handler) updateSpecParam(required bool, def interface{}, key stri
 
 }
 
-// Adds route params to the spec
+// updateParameters adds route params to the spec
 func (handler * Handler) updateParameters() {
 
 	switch spec := handler.Node.Config.Spec.(type) {

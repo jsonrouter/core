@@ -20,7 +20,7 @@ type Router interface{
 type Headers map[string]string
 
 
-// main handler
+// MainHandler is the main handler function for incoming requests
 func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *http.Status) {
 
 	met := node.Config.Metrics

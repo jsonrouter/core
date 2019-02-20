@@ -52,7 +52,7 @@ func (config *Config) NoCache() {
 	config.CacheFiles = false
 }
 
-// block all non-https requests
+// ForceTLS blocks all non-https requests
 func (config *Config) ForceTLS() {
 	config.Lock()
 	defer config.Unlock()

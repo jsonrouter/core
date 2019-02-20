@@ -10,7 +10,7 @@ import (
 	"github.com/jsonrouter/core/openapi/v3"
 )
 
-// make sure there are no duplicate OperationIDs
+// opCounter makes sure there are no duplicate OperationIDs
 var opCounter int
 
 func (node *Node) addHandler(method string, handler *Handler) {

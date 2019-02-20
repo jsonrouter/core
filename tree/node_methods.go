@@ -4,7 +4,7 @@ import (
 	"github.com/jsonrouter/core/http"
 )
 
-// Allows POST requests to the node's handler
+// HEAD allows POST requests to the node's handler
 func (node *Node) HEAD(functions ...interface{}) *Handler {
 
 	handler := node.newHandler("HEAD")
@@ -16,7 +16,7 @@ func (node *Node) HEAD(functions ...interface{}) *Handler {
 	return handler
 }
 
-// Allows GET requests to the node's handler
+// GET allows GET requests to the node's handler
 func (node *Node) GET(functions ...interface{}) *Handler {
 
 	handler := node.newHandler("GET")
@@ -28,7 +28,7 @@ func (node *Node) GET(functions ...interface{}) *Handler {
 	return handler
 }
 
-// Allows POST requests to the node's handler
+// POST allows POST requests to the node's handler
 func (node *Node) POST(functions ...interface{}) *Handler {
 
 	handler := node.newHandler("POST")
@@ -40,7 +40,7 @@ func (node *Node) POST(functions ...interface{}) *Handler {
 	return handler
 }
 
-// Allows PUT requests to the node's handler
+// PUT allows PUT requests to the node's handler
 func (node *Node) PUT(functions ...interface{}) *Handler {
 
 	handler := node.newHandler("PUT")
@@ -52,7 +52,7 @@ func (node *Node) PUT(functions ...interface{}) *Handler {
 	return handler
 }
 
-// Allows POST requests to the node's handler
+// DELETE allows DELETE requests to the node's handler
 func (node *Node) DELETE(functions ...interface{}) *Handler {
 
 	handler := node.newHandler("DELETE")
@@ -64,7 +64,7 @@ func (node *Node) DELETE(functions ...interface{}) *Handler {
 	return handler
 }
 
-// Allows POST requests to the node's handler
+// PATCH allows PATCH requests to the node's handler
 func (node *Node) PATCH(functions ...interface{}) *Handler {
 
 	handler := node.newHandler("PATCH")

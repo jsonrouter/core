@@ -102,7 +102,7 @@ type Parameter struct {
 	// "string", "number", "integer", "boolean", "array" or "file". If type is "file" see docs
 }
 
-// taken from https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#schemaObject
+// Schema is taken from https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#schemaObject
 // bits stolen from https://github.com/go-swagger/go-swagger/blob/master/generator/structs.go
 type Schema struct {
 	Ref string `json:"$ref,omitempty"`

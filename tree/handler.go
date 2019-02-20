@@ -102,7 +102,7 @@ func (handler *Handler) DetectContentType(req http.Request, filePath string) *ht
 	return nil
 }
 
-// Describes the function via the spec JSON
+// Description describes the function via the spec JSON
 func (handler *Handler) Description(descr string) *Handler {
 
 	handler.Descr = descr
@@ -110,7 +110,7 @@ func (handler *Handler) Description(descr string) *Handler {
 	return handler
 }
 
-// Applys model which describes response schema
+// Response applies model which describes response schema
 func (handler *Handler) Response(schema ...interface{}) *Handler {
 
 	handler.responseSchema = schema[0]
@@ -118,7 +118,7 @@ func (handler *Handler) Response(schema ...interface{}) *Handler {
 	return handler
 }
 
-// Validates any payload present in the request body, according to the payloadSchema
+// ReadPayload validates any payload present in the request body, according to the payloadSchema
 func (handler *Handler) ReadPayload(req http.Request) *http.Status {
 
 	var paramCount int

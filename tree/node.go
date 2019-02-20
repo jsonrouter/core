@@ -84,7 +84,7 @@ func (node *Node) SetHeaders(headers map[string]interface{}) *Node {
 	return node
 }
 
-// Returns the node's full path string
+// FullPath returns the node's full path string
 func (node *Node) FullPath() string {
 	var path string
 	if node.Parent != nil {
@@ -93,7 +93,7 @@ func (node *Node) FullPath() string {
 	return path
 }
 
-// Adds a new node to the tree
+// Add adds a new node to the tree
 func (node *Node) Add(path string, pathKeys ...string) *Node {
 
 	path = strings.TrimSpace(
@@ -123,7 +123,7 @@ func (node *Node) Add(path string, pathKeys ...string) *Node {
 	return n
 }
 
-// Adds a new param-node
+// Param adds a new param-node
 func (node *Node) Param(vc *validation.Config, keys ...string) *Node {
 
 	if len(keys) == 0 { panic("NO KEYS SUPPLIED FOR NEW PARAMETER") }
@@ -174,7 +174,7 @@ func (node *Node) newModule(function ModuleFunction, arg interface{}) *Module {
 	}
 }
 
-// Adds a module that will be executed at the point it is added to the route
+// Init adds a module that will be executed at the point it is added to the route
 func (node *Node) Init(function ModuleFunction, arg interface{}) *Node {
 	module := node.newModule(function, arg)
 	node.Lock()
@@ -183,7 +183,7 @@ func (node *Node) Init(function ModuleFunction, arg interface{}) *Node {
 	return node
 }
 
-// Adds a module that will be executed upon reaching a handler
+// Mod adds a module that will be executed upon reaching a handler
 func (node *Node) Mod(function ModuleFunction, arg interface{}) *Node {
 
 	if function == nil { panic("INVALID MODULE FUNC") }
@@ -197,7 +197,7 @@ func (node *Node) Mod(function ModuleFunction, arg interface{}) *Node {
 	return node
 }
 
-// execute init function added with .Init(...)
+// RunModule executes init function added with .Init(...)
 func (node *Node) RunModule(req http.Request) *http.Status {
 
 	node.RLock()
@@ -212,7 +212,7 @@ func (node *Node) RunModule(req http.Request) *http.Status {
 	return nil
 }
 
-// execute all module functions added with .Mod(...)
+// RunModules executes all module functions added with .Mod(...)
 func (node *Node) RunModules(req http.Request) *http.Status {
 
 	for _, module := range node.Modules {
@@ -227,7 +227,7 @@ func (node *Node) RunModules(req http.Request) *http.Status {
 
 // traversal
 
-// finds next node according to supplied URL path segment
+// Next finds next node according to supplied URL path segment
 func (node *Node) Next(req http.Request, pathSegment string) (*Node, *http.Status) {
 
 	// execute any init module(s)
@@ -269,14 +269,14 @@ func (node *Node) Next(req http.Request, pathSegment string) (*Node, *http.Statu
 	return next, nil
 }
 
-// Returns the handler assciated with the HTTP request method.
+// Handler returns the handler assciated with the HTTP request method.
 func (node *Node) Handler(req http.Request) *Handler {
 	node.RLock()
 	defer node.RUnlock()
 	return node.Methods[req.Method()]
 }
 
-// Adds a file to be served from the specified path.
+// File adds a file to be served from the specified path.
 func (node *Node) File(path string) *Node {
 	node.addHandler(
 		"GET",
@@ -289,7 +289,7 @@ func (node *Node) File(path string) *Node {
 	return node
 }
 
-// Walks through the specified folder to mirror the file structure for files containing all filters
+// Folder walks through the specified folder to mirror the file structure for files containing all filters
 func (node *Node) Folder(directoryPath string, filters ...string) *Node {
 
 	// remove trailing slash from the directory path if existing
@@ -320,7 +320,7 @@ func (node *Node) Folder(directoryPath string, filters ...string) *Node {
 	return node
 }
 
-// Walks through the specified folder to mirror the file structure for files containing all filters
+// StaticFolder walks through the specified folder to mirror the file structure for files containing all filters
 func (node *Node) StaticFolder(directoryPath string, filters ...string) *Node {
 
 	// remove trailing slash from the directory path if existing
@@ -343,7 +343,7 @@ func (node *Node) StaticFolder(directoryPath string, filters ...string) *Node {
 	return node
 }
 
-// Checks if file or folder, adding any files
+// checkFile checks if file or folder, adding any files
 func (node *Node) checkFile(name, path string, filters []string) {
 
 	info, err := os.Lstat(path)

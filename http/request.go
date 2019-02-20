@@ -51,7 +51,7 @@ type Request interface {
 	R() interface{}
 }
 
-// returns a standard 500 http error status
+// Fail returns a standard 500 http error status
 func Fail() *Status {
 	return Respond(500, "UNEXPECTED APPLICATION ERROR")
 }
