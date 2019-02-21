@@ -4,6 +4,7 @@ import (
 	//"reflect"
 )
 
+// Spec models an OpenApiv3 spec JSON
 type Spec struct {
 	OpenAPI string `json:"openapi"`
 	Info *Info `json:"info"`
@@ -21,30 +22,35 @@ type Spec struct {
 	ExternalDocs ExternalDocumentation `json:"externalDocs,omitempty"`
 }
 
+// Server models an OpenApiv3 Server Object 
 type Server struct {
 	Url string `json:"url"`
 	Description string `json:"description"`
 	Variables map[string]*ServerVariable `json:"variables"`
 }
 
+// ServerVariable models an OpenApi-v3 Server Variable Object
 type ServerVariable struct {
 	Enum []string `json:"enum"`
 	Default string `json:"default"`
 	Description string `json:"description"`
 }
 
+// ExternalDocumentation models an OpenApi-v3 External Documentation Object
 type ExternalDocumentation struct {
 	Description string `json:"description"`
 	Url string `json:"url"`
 
 }
 
+// Tag models an OpenApi-v3 Tag Object 
 type Tag struct {
 	Name string `json:"name"`
 	Description string `json:"description"`
 	ExternalDocs *ExternalDocumentation `json:"ExternalDocumentation"`
 }
 
+// SecurityRequirement models an OpenApi-v3 Security Requirement Object
 type SecurityRequirement struct {
 	Schemas map[string]*Schema `json:"schemas"`
 	Responses map[string]*Response `json:"responses"`
@@ -58,6 +64,7 @@ type SecurityRequirement struct {
 
 }
 
+// Components models an OpenApi-v3 Components Object
 type Components struct {
 	Schemas map[string]*Schema `json:"schemas,omitempty"`
 	Responses map[string]*Response `json:"responses,omitempty"`
@@ -70,6 +77,7 @@ type Components struct {
 	Callbacks map[string]*CallBack `json:"callbacks,omitempty"`
 }
 
+// SecurityScheme models an OpenApi-v3 Security Scheme Object
 type SecurityScheme struct {
 	Type string `json:"type"`
 	Description string `json:"description,omitempty"`
@@ -82,13 +90,14 @@ type SecurityScheme struct {
 	OpenIdConnectUrl string `json:"OpenIdConnectUrl,omitempty"` 
 }
 
+// 0AuthFlows models an OpenApi-v3 0AuthFlows Object
 type OAuthFlows struct {
 	Implicit *OAuthFlow `json:"implicit"` 
 	Password *OAuthFlow `json:"password"`
 	ClientCredentials *OAuthFlow  `json:"clientCredentials"`
 	AuthorizationCode *OAuthFlow `json:"authorizationCode"`
 }
-
+// 0AuthFlow models an OpenApi-v3 0AuthFlow Object
 type OAuthFlow struct {
 	AuthorizationUrl string `json:"authorizationUrl"`
 	TokenUrl string `json:"tokenUrl"`
@@ -96,8 +105,10 @@ type OAuthFlow struct {
 	Scopes map[string]string `json:"scopes"`
 }
 
+// Path models an OpenApi-v3 Path Object
 type Path map[string]*Operation
 
+// PathItem models an OpenApi-v3 Path Item Object
 type PathItem struct {
 	Ref *PathItem `json:"$ref"`
 	Summary string `json:"summary"`
@@ -114,6 +125,7 @@ type PathItem struct {
 	Parameters []*Parameter `json:"parameters"`
 }
 
+// Operation models an OpenApi-v3 Operation Object
 type Operation struct {
 	Tags []string `json:"tags,omitempty"`
 	Summary string `json:"summary,omitempty"`
@@ -130,6 +142,7 @@ type Operation struct {
 
 }
 
+// Response models an OpenApi-v3 Response Object
 func (self *Operation) Response(code int) *Response {
 	if self.Responses[code] == nil {
 		self.Responses[code] = &Response{
@@ -139,6 +152,7 @@ func (self *Operation) Response(code int) *Response {
 	return self.Responses[code]
 }
 
+// Encoding models an OpenApi-v3 Encoding Object
 type Encoding struct {
 	ContentType string `json:"contentType"`
 	Headers map[string]*Header `json:"headers"`
@@ -148,6 +162,7 @@ type Encoding struct {
 
 }
 
+// Example models an OpenApi-v3 Example Object
 type Example struct {
 	Summary string `json:"summary"`
 	Description string `json:"description"`
@@ -155,7 +170,7 @@ type Example struct {
  	ExternalValue string `json:"externalValue"`
 }
 
-
+// RequestBody models an OpenApi-v3 Request Body Object
 type RequestBody struct {
 	Ref string `json:"$ref"`
 	Description string `json:"description,omitempty"`
@@ -163,6 +178,7 @@ type RequestBody struct {
 	Required bool `json:"required,omitempty"`
 }
 
+// Header models an OpenApi-v3 Header Object
 type Header struct {
 	Name string `json:"name"`
 	In string `json:"in"`
@@ -179,10 +195,12 @@ type Header struct {
 	Examples map[string]*Example `json:"examples,omitempty"`
 }
 
+// Callback models an OpenApi-v3 Callback Object
 type CallBack struct {
 	Expression map[string]*PathItem 
 }
 
+// Info  models an OpenApi-v3 Info Ibject
 type Info struct {
 	Version string `json:"version"`
 	Title string `json:"title"`
@@ -198,7 +216,7 @@ type Info struct {
 		URL  string `json:"url"`
 	} `json:"license"`
 }
-
+// Parameter models an OpenApi-v3 Parameter Object
 type Parameter struct {
 	// required 'fixed' fields
 	Name string `json:"name"`
@@ -218,6 +236,7 @@ type Parameter struct {
 
 }
 
+// Items models an OpenApi-v3 Items Object
 type Items struct {
 	// misc
 	// "string", "number", "integer", "boolean", or "array" etc
@@ -244,6 +263,7 @@ type Items struct {
 	Items *Items `json:"items,omitempty"`
 }
 
+// Definition models an OpenApi-v3 Definition Object
 type Definition struct {
 	Type  string `json:"type"`
 	Ref string   `json:"$ref,omitempty"`
@@ -251,20 +271,22 @@ type Definition struct {
 	Properties map[string]Parameter `json:"properties,omitempty"`
 }
 
+// StatusSchema models an OpenApi-v3 Status Schema Object
 type StatusSchema struct {
 	Type string `json:"type"`
 	Items map[string]string `json:"items,omitempty"`
 }
 
+// StatusCode models an OpenApi-v3 Status Code Object
 type StatusCode struct {
 	Description string `json:"description"`
 	Schema StatusSchema `json:"schema"`
 }
 
-// Comments refer to the line above the comment :)
+// Responses models an OpenApi-v3 Responses Object
 type Responses map[int]*Response  
 
-
+// Response models an OpenApi-v3 Response Object
 type Response struct {
 	Description string `json:"description"`
 	Headers map[string]*Header `json:"headers,omitempty"`
@@ -272,6 +294,7 @@ type Response struct {
 	Links map[string]*Link `json:"links,omitempty"`
 }
 
+// MediaType models an OpenApi-v3 Media Type Object
 type MediaType struct {
 	Schema  *Schema `json:"schema,omitempty"`
 	Example interface{} `json:"example,omitempty"`
@@ -279,6 +302,7 @@ type MediaType struct {
 	Encoding map[string]*Encoding `json:"encoding,omitempty"`
 }
 
+// Link models an OpenApi-v3 Link Object
 type Link struct {
 	OperationRef string `json:"operationRef"`
 	OperationID string `json:"operationId"`
@@ -289,6 +313,7 @@ type Link struct {
 
 }
 
+// Schema models an OpenApi-v3 Schema Object
 type Schema struct {
 	Title string `json:"title,omitempty"`
 	MultipleOf int `json:"multipleOf,omitempty"`

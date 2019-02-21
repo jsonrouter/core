@@ -4,6 +4,7 @@ import (
 	"reflect"
 )
 
+// New returns a new spec object
 func New(host, serviceName string) *Spec {
 	return &Spec{
 		Swagger: "2.0",

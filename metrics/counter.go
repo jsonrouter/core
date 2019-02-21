@@ -5,13 +5,14 @@ import (
 
 )
 
+// Counter is a simple counter
 type Counter struct {
 	Name string
 	t uint64
 	sync.RWMutex
 }
 
-// GetValue exposes the value
+// GetValue is a method to directly get the current value of the counter
 func (self *Counter) GetValue() uint64 {
 	self.RLock()
 	defer self.RUnlock()
@@ -19,7 +20,7 @@ func (self *Counter) GetValue() uint64 {
 	return self.t
 }
 
-// Reset will reset the counter
+// Reset resets the counter to 0
 func (self *Counter) Reset() {
 	self.Lock()
 	defer self.Unlock()
@@ -27,7 +28,8 @@ func (self *Counter) Reset() {
 	self.t = 0
 }
 
-// Increment
+// Incrememt increments the counter by 1.
+// Call this function where the action want to count is.
 func (self *Counter) Increment() {
 	self.Lock()
 	defer self.Unlock()
@@ -35,7 +37,9 @@ func (self *Counter) Increment() {
 	self.t += 1
 }
 
-// Update
+// Update is called to save the value the counterinto the results map.
+// You can pass any map[string]Interface{} to store results including the provide Results
+// map on the main Metrics struct
 func (self *Counter) Update(results *map[string]interface{}) error {
 
 	self.Lock()
@@ -43,6 +47,6 @@ func (self *Counter) Update(results *map[string]interface{}) error {
 
 	res := *results
 	res[self.Name] = self.t
-	
+
 	return nil
 }

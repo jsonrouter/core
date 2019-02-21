@@ -1,5 +1,6 @@
 package openapiv2
 
+// Spec models an OpenApiv2 spec JSON
 type Spec struct {
 	Swagger string `json:"swagger"`
 	Info *Info `json:"info"`
@@ -19,6 +20,7 @@ type Spec struct {
 // To enable API key all the SecurityRequirement Objects (https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#security-requirement-object)
 // inside security definition must reference at least one SecurityDefinition of type : 'apiKey'.
 
+// SecurityDefinition models an OpenApi-v2 Security Definition Object
 type SecurityDefinition struct {
 	Type string `json:"type"`
 	In string `json:"in"`
@@ -27,7 +29,7 @@ type SecurityDefinition struct {
 	TokenUrl string `json:"tokenUrl,omitempty"`
 }
 
-
+// Info models an OpenApi-v2 Info Object
 type Info struct {
 	Version string `json:"version"`
 	Title string `json:"title"`
@@ -44,8 +46,10 @@ type Info struct {
 	} `json:"license"`
 }
 
+// Path models an OpenApi-v2 Path Object
 type Path map[string]*PathMethod
 
+// PathMethod models an OpenApi-v2 Path Method Object
 type PathMethod struct {
 	Description string `json:"description,omitempty"`
 	OperationID string `json:"operationId,omitempty"`
@@ -55,6 +59,7 @@ type PathMethod struct {
 //	Security []*SecuritySchemeObject `json:"security,omitempty"`
 }
 
+// Response models an OpenApi-v2 Response Object
 func (self *PathMethod) Response(code int) *Response {
 	if self.Responses[code] == nil {
 		self.Responses[code] = &Response{
@@ -64,6 +69,7 @@ func (self *PathMethod) Response(code int) *Response {
 	return self.Responses[code]
 }
 
+// Parameter models an OpenApi-v2 Parameter Object
 type Parameter struct {
 	// required 'fixed' fields
 	Name string `json:"name,omitempty"`
@@ -134,6 +140,7 @@ type Schema struct {
 	Items *Items `json:"items,omitempty"`
 }
 
+// Items models an OpenApi-v2 Items Object
 type Items struct {
 	// misc
 	// "string", "number", "integer", "boolean", or "array" etc
@@ -160,6 +167,7 @@ type Items struct {
 	Items *Items `json:"items,omitempty"`
 }
 
+// Definition models an OpenApi-v2 Definition Object
 type Definition struct {
 	Type  string `json:"type"`
 	Ref string   `json:"$ref,omitempty"`
@@ -167,17 +175,19 @@ type Definition struct {
 	Properties map[string]Parameter `json:"properties,omitempty"`
 }
 
+// StatusSchema models an OpenApi-v2 Status Schema Object
 type StatusSchema struct {
 	Type string `json:"type"`
 	Items map[string]string `json:"items,omitempty"`
 }
-
+// Response models an OpenApi-v2 Response Object
 type Response struct {
 	Description string `json:"description"`
 	Schema *StatusSchema `json:"schema,omitempty"`
 	Headers map[string]*Header `json:"headers,omitempty"`
 }
 
+// Header models an OpenApi-v2 Header Object 
 type Header struct {
 	Type string `json:"type,omitempty"`
 	Format string `json:"format,omitempty"`
