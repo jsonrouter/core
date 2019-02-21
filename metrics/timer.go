@@ -5,6 +5,7 @@ import (
 	"sync/atomic"
 )
 
+// Timer is a simple timer used to measure time taken to perform given tasks in microseconds
 type Timer struct {
 	Name string
 	BufferSize uint64 
@@ -14,6 +15,7 @@ type Timer struct {
 	buffer []uint64
 }
 
+// Stop stops the timer
 func (self *Timer) Stop() error {
 
 	self.fms = atomic.LoadUint64(&self.ms)
@@ -25,6 +27,7 @@ func (self *Timer) Stop() error {
 	return nil
 }
 
+// Start starts the timer. Place what needs to be timed in between Start() and Stop()
 func (self *Timer) Start() error {
 	
 	self.ms = 0
@@ -46,6 +49,9 @@ func (self *Timer) Start() error {
 	return nil
 }
 
+// Update is called to save the values of the timer into the results map. 
+// You can pass any map[string]Interface{} to store results including the provide Results
+// map on the main Metrics struct
 func (self *Timer) Update(results *map[string]interface{}) error {
 	res := *results
 	bufferSize := uint64(len(self.buffer))
