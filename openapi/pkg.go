@@ -8,6 +8,7 @@ import (
 	"github.com/jsonrouter/core/openapi/v3"
 )
 
+// ValidSpec tests to see if the passed spec is valid
 func ValidSpec(x interface{}) error {
 
 	switch x.(type) {
