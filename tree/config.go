@@ -24,18 +24,22 @@ type Config struct {
 	Metrics metrics.Metrics
 }
 
+// SpecV2 exposes the spec object as a V2
 func (config *Config) SpecV2() *openapiv2.Spec {
 	return config.Spec.(*openapiv2.Spec)
 }
 
+// SpecV3 exposes the spec object as a V3
 func (config *Config) SpecV3() *openapiv3.Spec {
 	return config.Spec.(*openapiv3.Spec)
 }
 
+// SpecHandler serves the raw spec to a HTTP request.
 func (config *Config) SpecHandler(req http.Request) *http.Status {
 	return req.Respond(config.Spec)
 }
 
+// MetricsHandler serves the raw metrics to a HTTP request.
 func (config *Config) MetricsHandler(req http.Request) *http.Status {
 
 	res, err := json.Marshal(config.Metrics.Results)
@@ -46,6 +50,7 @@ func (config *Config) MetricsHandler(req http.Request) *http.Status {
 	return req.Respond(res)
 }
 
+// NoCache sets the no-cache part of the router config to true. This stops any static files being cached.
 func (config *Config) NoCache() {
 	config.Lock()
 	defer config.Unlock()

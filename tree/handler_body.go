@@ -26,6 +26,7 @@ func (handler *Handler) Optional(objects ...validation.Payload) *Handler {
 	return handler
 }
 
+// updateSpecParams triggers an update of the spec parameters
 func (handler *Handler) updateSpecParams(required bool, payload validation.Payload) {
 
 	switch spec := handler.Node.Config.Spec.(type) {
@@ -104,6 +105,7 @@ func (handler *Handler) updateSpecParams(required bool, payload validation.Paylo
 
 }
 
+// updateSpecParam triggers and updates the spec parameter.
 func (handler *Handler) updateSpecParam(required bool, def interface{}, key string, cfg *validation.Config) {
 
 	switch v := handler.payloadSchema.(type) {
@@ -216,7 +218,7 @@ func (handler * Handler) updateParameters() {
 			param.Schema.Type = cfg.Type
 			param.Schema.Minimum = minLength
 			param.Schema.Maximum = maxLength
-			
+
 			param.Required = true
 
 			operation.Parameters = append(operation.Parameters, param)

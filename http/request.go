@@ -56,6 +56,7 @@ func Fail() *Status {
 	return Respond(500, "UNEXPECTED APPLICATION ERROR")
 }
 
+// Respond creates a Status object that can be served to the client.
 func Respond(args ...interface{}) *Status {
 
 	var ok bool

@@ -13,6 +13,7 @@ import (
 // opCounter makes sure there are no duplicate OperationIDs
 var opCounter int
 
+// addHandler literally adds a handler to the node object under a http method
 func (node *Node) addHandler(method string, handler *Handler) {
 
 	switch spec := node.Config.Spec.(type) {

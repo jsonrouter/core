@@ -8,6 +8,7 @@ import (
 	//"fmt"
 )
 
+// SetHeaders allows the headers for the HTTP response to be set by providing a map of header key, values.
 func (handler *Handler) SetHeaders(headers map[string]interface{}) *Handler {
 
 	for k, v := range headers {
@@ -19,6 +20,7 @@ func (handler *Handler) SetHeaders(headers map[string]interface{}) *Handler {
 	return handler
 }
 
+// updateSpecHeaders triggers an update of the headers in the spec object
 func (handler *Handler) updateSpecHeaders() {
 
 	switch spec := handler.Node.Config.Spec.(type) {

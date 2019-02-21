@@ -18,13 +18,13 @@ type Metrics struct {
 	sync.RWMutex
 }
 
-func sum (vals ...uint64) uint64 {
+func sum(vals ...uint64) uint64 {
 
 	var sum uint64
-	
+
 	for _, val := range vals {
 		sum += val
 	}
-	
+
 	return sum
 }

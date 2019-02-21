@@ -12,6 +12,7 @@ type Module struct {
 	arg interface{}
 }
 
+// Run will run the module function 
 func (mod *Module) Run(req http.Request) *http.Status {
 
 	return mod.function(req, mod.arg)
