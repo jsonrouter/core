@@ -16,7 +16,6 @@ type Counter struct {
 func (self *Counter) GetValue() uint64 {
 	self.RLock()
 	defer self.RUnlock()
-
 	return self.t
 }
 
@@ -24,7 +23,6 @@ func (self *Counter) GetValue() uint64 {
 func (self *Counter) Reset() {
 	self.Lock()
 	defer self.Unlock()
-
 	self.t = 0
 }
 
@@ -33,7 +31,6 @@ func (self *Counter) Reset() {
 func (self *Counter) Increment() {
 	self.Lock()
 	defer self.Unlock()
-
 	self.t += 1
 }
 
@@ -41,12 +38,9 @@ func (self *Counter) Increment() {
 // You can pass any map[string]Interface{} to store results including the provide Results
 // map on the main Metrics struct
 func (self *Counter) Update(results *map[string]interface{}) error {
-
 	self.Lock()
 	defer self.Unlock()
-
 	res := *results
 	res[self.Name] = self.t
-
 	return nil
 }
