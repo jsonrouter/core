@@ -11,6 +11,7 @@ type Status struct {
 	Message interface{} `json:"message"`
 }
 
+// MessageString serialises the status to a string.
 func (status *Status) MessageString() string {
 	switch v := status.Message.(type) {
 		case nil:
@@ -23,6 +24,7 @@ func (status *Status) MessageString() string {
 	return "INVALID STATUS MESSAGE TYPE: "+reflect.TypeOf(status.Message).String()
 }
 
+// Respond executes the status on a HTTP level.
 func (status *Status) Respond(req Request) {
 
 	// return with no action if handler returns nil
@@ -43,7 +45,11 @@ func (status *Status) Respond(req Request) {
 		case [][]byte:
 
 			for _, b := range v {
-				req.Write(b)
+				// if writing part of the response fails, then return a HTTP 500 status.
+				_, err := req.Write(b)
+				if req.Log().Error(err) {
+					status = req.Fail()
+				}
 			}
 
 		default:

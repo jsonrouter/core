@@ -40,7 +40,7 @@ type Request interface {
 	ServeFile(string)
 	HttpError(string, int)
 	Writer() io.Writer
-	Write([]byte)
+	Write([]byte) (int, error)
 	WriteString(string)
 	Fail() *Status
 	Respond(args ...interface{}) *Status

@@ -192,8 +192,8 @@ func (ti *MockRequest) WriteString(s string) {
 }
 
 // Write
-func (ti *MockRequest) Write(b []byte) {
-
+func (ti *MockRequest) Write(b []byte) (int, error) {
+	return 0, nil
 }
 
 // Fail
