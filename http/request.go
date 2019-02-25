@@ -41,7 +41,7 @@ type Request interface {
 	HttpError(string, int)
 	Writer() io.Writer
 	Write([]byte) (int, error)
-	WriteString(string)
+	WriteString(string) (int, error)
 	Fail() *Status
 	Respond(args ...interface{}) *Status
 	// logging

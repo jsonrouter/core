@@ -12,10 +12,10 @@ import (
 	"github.com/jsonrouter/core/http"
 	"github.com/jsonrouter/platforms/fasthttp"
 	"github.com/jsonrouter/logging/testing"
-	
+
 	fasthttptest "github.com/jsonrouter/core/tests/fasthttp"
 	standardtest "github.com/jsonrouter/core/tests/standard"
-	//appenginetest "github.com/jsonrouter/core/tests/appengine"
+	appenginetest "github.com/jsonrouter/core/tests/appengine"
 	"github.com/jsonrouter/core/tests/common"
 )
 
@@ -34,7 +34,7 @@ func (app *App) ApiGET(req http.Request) *http.Status {
 
 		if int(val) != (x) {
 			req.Log().Debugf("GET: CORRECT VALUE IS %v NOT %v", x, int(val))
-			
+
 			app.T.Fail()
 		}
 	}()
@@ -53,7 +53,7 @@ func (app *App) ApiPOST(req http.Request) *http.Status {
 		req.Log().Debugf("POST: CORRECT VALUE IS %v", x)
 		return req.Fail()
 	}
-	
+
 	return nil
 }
 
@@ -63,14 +63,14 @@ func TestFastHttpMetrics(t *testing.T) {
 
 	// create routing structure
 	root, _ := jsonrouter.New(logs.NewClient().NewLogger("Server"), openapiv2.New("localhost", "test"))
-	
+
 	endpoint := root.Add("/endpoint").Param(validation.Int(), "x")
 	endpoint.GET(app.ApiGET)
 	endpoint.POST(app.ApiPOST)
 
 	a := map[string]func(t *testing.T, node *tree.Node) *common.TestHTTPStruct{
 		"fasthttp": fasthttptest.TestServer,
-		//"appengine": appenginetest.TestServer,
+		"appengine": appenginetest.TestServer,
 		"standard": standardtest.TestServer,
 	}
 

@@ -187,8 +187,8 @@ func (ti *MockRequest) Writer() io.Writer {
 }
 
 // WriteString
-func (ti *MockRequest) WriteString(s string) {
-
+func (ti *MockRequest) WriteString(s string) (int, error) {
+	return len(s), nil
 }
 
 // Write
