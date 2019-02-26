@@ -1,14 +1,14 @@
 package server
 import (
 	"fmt"
+	ht "net/http"
+	//
 	"github.com/jsonrouter/logging/testing"
 	"github.com/jsonrouter/core/openapi/v2"
 	"github.com/jsonrouter/platforms/standard"
 	"github.com/jsonrouter/core/http"
 	"github.com/jsonrouter/core/tests/common"
 	"github.com/jsonrouter/validation"
-	ht "net/http"
-	//"expvar"
 )
 
 type testStruct struct {
@@ -17,7 +17,6 @@ type testStruct struct {
 }
 
 func returnStruct() interface{} {
-
 	return &testStruct {
 		name : "steve",
 		data : 10,
@@ -64,7 +63,6 @@ func Start() {
 		},
 	)
 
-	//expvar.Publish("METRIC", expvar.Func(returnStruct))
 	fmt.Println("Serving:", common.CONST_PORT_STANDARD)
 
 	panic(

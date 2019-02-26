@@ -6,10 +6,10 @@ import (
 	//"github.com/jsonrouter/core/tree"
 	"github.com/jsonrouter/logging/testing"
 	"github.com/jsonrouter/core/openapi/v2"
-	"github.com/jsonrouter/platforms/fasthttp"
 	"github.com/jsonrouter/core/http"
 	"github.com/jsonrouter/core/tests/common"
 	"github.com/jsonrouter/validation"
+	"github.com/jsonrouter/platforms/fasthttp"
 )
 
 type App struct {
