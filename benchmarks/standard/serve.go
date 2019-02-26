@@ -8,7 +8,21 @@ import (
 	"github.com/jsonrouter/core/tests/common"
 	"github.com/jsonrouter/validation"
 	ht "net/http"
+	"expvar"
 )
+
+type testStruct struct {
+	name string
+	data int
+}
+
+func returnStruct() interface{} {
+
+	return &testStruct {
+		name : "steve",
+		data : 10,
+	}
+}
 
 type App struct {
 	*common.TestHTTPStruct
@@ -53,14 +67,15 @@ func Start() {
 	endpoint.GET(app.ApiGET)
 	endpoint.POST(app.ApiPOST)
 
-	fmt.Println("Serving:", common.CONST_PORT_STANDARD)
+	expvar.Publish("METRIC", expvar.Func(returnStruct))
+
 	panic(
 			ht.ListenAndServe(
 				fmt.Sprintf(
 					":%d",
 					common.CONST_PORT_STANDARD,
 				),
-				service,
+				nil,//service,
 			),
 	)
 }
