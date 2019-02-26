@@ -1,4 +1,4 @@
-package main
+package server
 import (
 	"fmt"
 	"github.com/jsonrouter/logging/testing"
@@ -16,7 +16,7 @@ type App struct {
 
 func (app *App) ApiGET(req http.Request) *http.Status {
 
-	req.Log().Debug("GET")
+//	req.Log().Debug("GET")
 
 	x := req.Param("x").(int)
 
@@ -25,14 +25,14 @@ func (app *App) ApiGET(req http.Request) *http.Status {
 
 func (app *App) ApiPOST(req http.Request) *http.Status {
 
-	req.Log().Debug("POST")
+//	req.Log().Debug("POST")
 
 	x := req.Param("x").(int)
-	
+
 	return req.Respond(x)
 }
 
-func main() {
+func Start() {
 	app := &App{}
 
 	s := openapiv2.New(common.CONST_SPEC_HOST, common.CONST_SPEC_TITLE)
@@ -53,7 +53,7 @@ func main() {
 	endpoint.GET(app.ApiGET)
 	endpoint.POST(app.ApiPOST)
 
-	fmt.Println("Serving..")
+	fmt.Println("Serving:", common.CONST_PORT_STANDARD)
 	panic(
 			ht.ListenAndServe(
 				fmt.Sprintf(
