@@ -17,21 +17,15 @@ type App struct {
 }
 
 func (app *App) ApiGET(req http.Request) *http.Status {
-
-	//req.Log().Debug("GET")
-
-	x := req.Param("x").(int)
-
-	return req.Respond(x)
+	return req.Respond(
+		req.Param("x").(int),
+	)
 }
 
 func (app *App) ApiPOST(req http.Request) *http.Status {
-
-	//req.Log().Debug("POST")
-
-	x := req.Param("x").(int)
-
-	return req.Respond(x)
+	return req.Respond(
+		req.Param("x").(int),
+	)
 }
 
 func Start() {

@@ -8,7 +8,7 @@ import (
 	"github.com/jsonrouter/core/tests/common"
 	"github.com/jsonrouter/validation"
 	ht "net/http"
-	"expvar"
+	//"expvar"
 )
 
 type testStruct struct {
@@ -29,21 +29,15 @@ type App struct {
 }
 
 func (app *App) ApiGET(req http.Request) *http.Status {
-
-//	req.Log().Debug("GET")
-
-	x := req.Param("x").(int)
-
-	return req.Respond(x)
+	return req.Respond(
+		req.Param("x").(int),
+	)
 }
 
 func (app *App) ApiPOST(req http.Request) *http.Status {
-
-//	req.Log().Debug("POST")
-
-	x := req.Param("x").(int)
-
-	return req.Respond(x)
+	return req.Respond(
+		req.Param("x").(int),
+	)
 }
 
 func Start() {
@@ -62,12 +56,16 @@ func Start() {
 		panic(err)
 	}
 
-
 	endpoint := service.Node.Add("/endpoint").Param(validation.Int(), "x")
 	endpoint.GET(app.ApiGET)
-	endpoint.POST(app.ApiPOST)
+	endpoint.POST(app.ApiPOST).Required(
+		validation.Payload{
+			"hello": validation.String(1, 100),
+		},
+	)
 
-	expvar.Publish("METRIC", expvar.Func(returnStruct))
+	//expvar.Publish("METRIC", expvar.Func(returnStruct))
+	fmt.Println("Serving:", common.CONST_PORT_STANDARD)
 
 	panic(
 			ht.ListenAndServe(
@@ -75,7 +73,7 @@ func Start() {
 					":%d",
 					common.CONST_PORT_STANDARD,
 				),
-				nil,//service,
+				service,
 			),
 	)
 }
