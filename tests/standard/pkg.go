@@ -2,18 +2,15 @@ package fasthttptest
 
 import (
 	"fmt"
-	
 	"time"
 	"testing"
 	ht "net/http"
-	//
 	"github.com/jsonrouter/core/tree"
 	"github.com/jsonrouter/core/openapi/v2"
 	"github.com/jsonrouter/platforms/standard"
 	"github.com/jsonrouter/logging/testing"
-	//
 	"github.com/jsonrouter/core/tests/common"
-)   
+)
 
 func TestServer(t *testing.T, node *tree.Node) *common.TestHTTPStruct {
 

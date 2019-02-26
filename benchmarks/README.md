@@ -13,4 +13,6 @@ and then in /benchmarks run
 
 go test -run=XXX -bench=.
 
+- Appengine Testing disabled at the moment
+
  

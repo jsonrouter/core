@@ -8,9 +8,9 @@ import (
 
 )
 
-func BenchmarkAppengine(b *testing.B) {
+func BenchmarkStandard(b *testing.B) {
 
-	url := fmt.Sprintf("http://localhost:%d/endpoint/0", common.CONST_PORT_APPENGINE)
+	url := fmt.Sprintf("http://localhost:%d/endpoint/0", common.CONST_PORT_STANDARD)
 
 	// Actual benchmark starts here
 	for n := 0; n < b.N; n++ {
