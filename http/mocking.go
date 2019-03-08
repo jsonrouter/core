@@ -3,6 +3,7 @@ package http
 import (
 	"io"
 	"os"
+	"sync"
 	"net/url"
 	"net/http"
 	//
@@ -36,6 +37,7 @@ type MockRequest struct {
 	requestHeaders map[string]string
 	responseHeaders map[string]string
 	log logging.Logger
+	sync.RWMutex
 }
 
 // UID returns a UUID that has been generated randoomly for this request.
@@ -76,93 +78,128 @@ func (ti *MockRequest) Device() string {
 
 // Body
 func (ti *MockRequest) Body(s string) interface{} {
+	ti.RLock()
+	defer ti.RUnlock()
 	return 0
 }
 
 // Param
 func (ti *MockRequest) Param(k string) interface{} {
+	ti.RLock()
+	defer ti.RUnlock()
 	return ti.params[k]
 }
 
 // Params
 func (ti *MockRequest) Params() map[string]interface{} {
+	ti.RLock()
+	defer ti.RUnlock()
 	return ti.params
 }
 
 // SetParam
 func (ti *MockRequest) SetParam(k string, i interface{}) {
+	ti.Lock()
+	defer ti.Unlock()
 	ti.params[k] = i
 }
 
 // SetParams
 func (ti *MockRequest) SetParams(m map[string]interface{}) {
+	ti.Lock()
+	defer ti.Unlock()
 	ti.params = m
 }
 
 // BodyParam
 func (ti *MockRequest) BodyParam(k string) interface{} {
+	ti.RLock()
+	defer ti.RUnlock()
 	return ti.bodyParams[k]
 }
 
 // BodyParams
 func (ti *MockRequest) BodyParams() map[string]interface{} {
+	ti.RLock()
+	defer ti.RUnlock()
 	return ti.bodyParams
 }
 
 
 // SetBodyParam
 func (ti *MockRequest) SetBodyParam(k string, i interface{}) {
+	ti.Lock()
+	defer ti.Unlock()
 	ti.bodyParams[k] = i
 }
 
 // SetBodyParams
 func (ti *MockRequest) SetBodyParams(m map[string]interface{}) {
+	ti.Lock()
+	defer ti.Unlock()
 	ti.bodyParams = m
 }
 
 // SetRequestHeader
 func (ti *MockRequest) SetRequestHeader(k, v string) {
+	ti.Lock()
+	defer ti.Unlock()
 	ti.requestHeaders[k] = v
 }
 
 // GetRequestHeader
 func (ti *MockRequest) GetRequestHeader(k string) string {
+	ti.RLock()
+	defer ti.RUnlock()
 	return ti.requestHeaders[k]
 }
 
 // SetResponseHeader
 func (ti *MockRequest) SetResponseHeader(k, v string) {
+	ti.Lock()
+	defer ti.Unlock()
 	ti.responseHeaders[k] = v
 }
 
 // GetResponseHeader
 func (ti *MockRequest) GetResponseHeader(k string) string {
+	ti.RLock()
+	defer ti.RUnlock()
 	return ti.responseHeaders[k]
 }
 
 // RawBody
 func (ti *MockRequest) RawBody() (*Status, []byte) {
+	ti.RLock()
+	defer ti.RUnlock()
 	return nil, []byte{}
-
 }
 
 // ReadBodyObject
 func (ti *MockRequest) ReadBodyObject() *Status {
+	ti.RLock()
+	defer ti.RUnlock()
 	return nil
 }
 
 // ReadBodyArray
 func (ti *MockRequest) ReadBodyArray() *Status {
+	ti.RLock()
+	defer ti.RUnlock()
 	return nil
 }
 
 // BodyObject
 func (ti *MockRequest) BodyObject() map[string]interface{} {
+	ti.RLock()
+	defer ti.RUnlock()
 	return map[string]interface{}{}
 }
 
 // BodyArray
 func (ti *MockRequest) BodyArray() []interface{} {
+	ti.RLock()
+	defer ti.RUnlock()
 	return []interface{}{}
 }
 
