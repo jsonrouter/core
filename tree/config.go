@@ -2,14 +2,12 @@ package tree
 
 import 	(
 	"sync"
-	//"time"
-	"encoding/json"
-	//"fmt"
+	//
 	"github.com/jsonrouter/logging"
 	"github.com/jsonrouter/core/http"
+	"github.com/jsonrouter/core/metrics"
 	openapiv2 "github.com/jsonrouter/core/openapi/v2"
 	openapiv3 "github.com/jsonrouter/core/openapi/v3"
-	"github.com/jsonrouter/core/metrics"
 )
 
 type Config struct {
@@ -42,12 +40,12 @@ func (config *Config) SpecHandler(req http.Request) *http.Status {
 // MetricsHandler serves the raw metrics to a HTTP request.
 func (config *Config) MetricsHandler(req http.Request) *http.Status {
 
-	res, err := json.Marshal(config.Metrics.Results)
-	if err != nil {
+	b, err := config.Metrics.MarshalResults()
+	if req.Log().Error(err) {
 		return req.Fail()
 	}
 
-	return req.Respond(res)
+	return req.Respond(b)
 }
 
 // NoCache sets the no-cache part of the router config to true. This stops any static files being cached.

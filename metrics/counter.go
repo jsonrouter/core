@@ -37,12 +37,7 @@ func (self *Counter) Increment() {
 // Update is called to save the value the counterinto the results map.
 // You can pass any map[string]Interface{} to store results including the provide Results
 // map on the main Metrics struct
-func (self *Counter) Update(mtx *sync.RWMutex, results map[string]interface{}) {
+func (self *Counter) Update(f func(k string, v interface{})) {
 
-	if mtx != nil {
-		mtx.Lock()
-		defer mtx.Unlock()
-	}
-
-	results[self.Name] = self.t
+	f(self.Name, self.t)
 }

@@ -59,7 +59,7 @@ func (self *Timer) Start() error {
 // Update is called to save the values of the timer into the results map.
 // You can pass any map[string]Interface{} to store results including the provide Results
 // map on the main Metrics struct
-func (self *Timer) Update(mtx *sync.RWMutex, results map[string]interface{}) {
+func (self *Timer) Update(f func(k string, v interface{})) {
 
 	self.RLock()
 	bufferSize := uint64(len(self.buffer))
@@ -70,8 +70,5 @@ func (self *Timer) Update(mtx *sync.RWMutex, results map[string]interface{}) {
 		r = r / bufferSize
 	}
 
-	mtx.Lock()
-	defer mtx.Unlock()
-
-	results[self.Name] = r
+	f(self.Name, r)
 }

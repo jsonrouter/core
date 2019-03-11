@@ -36,16 +36,16 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 		}
 
 		met.MultiCounters["requestMethods"].Increment(req.Method())
-		met.MultiCounters["requestMethods"].Update(&met.RWMutex, node.Config.Metrics.Results)
+		met.MultiCounters["requestMethods"].Update(met.SetResults)
 
 		met.MultiCounters["responseCodes"].Increment(strconv.Itoa(status.Code))
-		met.MultiCounters["responseCodes"].Update(&met.RWMutex, node.Config.Metrics.Results)
+		met.MultiCounters["responseCodes"].Update(met.SetResults)
 
 		met.Counters["requestCount"].Increment()
-		met.Counters["requestCount"].Update(&met.RWMutex, node.Config.Metrics.Results)
+		met.Counters["requestCount"].Update(met.SetResults)
 
 		met.Timers["requestTime"].Stop()
-		met.Timers["requestTime"].Update(&met.RWMutex, node.Config.Metrics.Results)
+		met.Timers["requestTime"].Update(met.SetResults)
 
 	}()
 

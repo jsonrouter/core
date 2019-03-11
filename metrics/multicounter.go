@@ -52,7 +52,7 @@ func (self *MultiCounter) Increment(counter string) {
 // Update is called to save the values of all counters into the results map.
 // You can pass any map[string]Interface{} to store results including the provide Results
 // map on the main Metrics struct
-func (self *MultiCounter) Update(mtx *sync.RWMutex, results map[string]interface{}) {
+func (self *MultiCounter) Update(f func(k string, v interface{})) {
 
 	r := make(map[string]interface{})
 
@@ -63,8 +63,6 @@ func (self *MultiCounter) Update(mtx *sync.RWMutex, results map[string]interface
 	}
 	self.RUnlock()
 
-	mtx.Lock()
-	defer mtx.Unlock()
-
-	results[self.Name] = r
+	// call the function that will update the results
+	f(self.Name, r)
 }

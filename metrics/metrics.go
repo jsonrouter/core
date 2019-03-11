@@ -5,11 +5,42 @@ package metrics
 
 import (
 	"sync"
+	"encoding/json"
 )
 
+/*
 type MetricsInterface struct {
 	Update error
 }
+*/
+
+func NewMetrics() Metrics {
+	return Metrics{
+		Timers: map[string]*Timer{
+			"requestTime": &Timer{
+				Name : "requestTime",
+				BufferSize : 1000,
+			},
+		},
+		Counters: map[string]*Counter{
+			"requestCount" : &Counter{
+				Name : "requestCount",
+			},
+		},
+		MultiCounters: map[string]*MultiCounter{
+			"responseCodes" : &MultiCounter{
+				Name : "responseCodes",
+				Counters : map[string]*Counter{},
+			},
+			"requestMethods" : &MultiCounter{
+				Name : "requestMethods",
+				Counters : map[string]*Counter{},
+			},
+		},
+		results: map[string]interface{}{},
+	}
+}
+
 
 // Metrics is the main object to instantiate when using the metrics package. One instance of
 // a Metrics object will contain all your timers and counters and results
@@ -17,9 +48,20 @@ type Metrics struct {
 	Timers map[string]*Timer
 	Counters map[string]*Counter
 	MultiCounters map[string]*MultiCounter
-	//Config *config
-	Results map[string]interface{}
+	results map[string]interface{}
 	sync.RWMutex
+}
+
+func (self *Metrics) MarshalResults() ([]byte, error) {
+	self.RLock()
+	defer self.RUnlock()
+	return json.Marshal(self.results)
+}
+
+func (self *Metrics) SetResults(k string, v interface{}) {
+	self.Lock()
+	defer self.Unlock()
+	self.results[k] = v
 }
 
 func sum(vals ...uint64) uint64 {
