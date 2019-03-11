@@ -17,7 +17,6 @@ type Metrics struct {
 	Timers map[string]*Timer
 	Counters map[string]*Counter
 	MultiCounters map[string]*MultiCounter
-	BenchMarks map[string]*BenchMark
 	//Config *config
 	Results map[string]interface{}
 	sync.RWMutex

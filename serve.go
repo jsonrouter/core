@@ -26,7 +26,6 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 	met := node.Config.Metrics
 
 	met.Timers["requestTime"].Start()
-	met.BenchMarks["requestMethodsBench"].StartTimer(req.Method())
 
 	defer func(){
 
@@ -36,24 +35,18 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 			status.Respond(req)
 		}
 
-		node.Config.Metrics.Lock()
-
 		met.MultiCounters["requestMethods"].Increment(req.Method())
-		met.MultiCounters["requestMethods"].Update(&node.Config.Metrics.Results)
+		met.MultiCounters["requestMethods"].Update(&met.RWMutex, node.Config.Metrics.Results)
 
 		met.MultiCounters["responseCodes"].Increment(strconv.Itoa(status.Code))
-		met.MultiCounters["responseCodes"].Update(&node.Config.Metrics.Results)
+		met.MultiCounters["responseCodes"].Update(&met.RWMutex, node.Config.Metrics.Results)
 
 		met.Counters["requestCount"].Increment()
-		met.Counters["requestCount"].Update(&node.Config.Metrics.Results)
+		met.Counters["requestCount"].Update(&met.RWMutex, node.Config.Metrics.Results)
 
 		met.Timers["requestTime"].Stop()
-		met.Timers["requestTime"].Update(&node.Config.Metrics.Results)
+		met.Timers["requestTime"].Update(&met.RWMutex, node.Config.Metrics.Results)
 
-		met.BenchMarks["requestMethodsBench"].StopTimer(req.Method())
-		met.BenchMarks["requestMethodsBench"].Update(&node.Config.Metrics.Results)
-
-		node.Config.Metrics.Unlock()
 	}()
 
 	// enforce https-only if required

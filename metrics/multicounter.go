@@ -5,7 +5,7 @@ import (
 )
 
 // MultiCounter is a collection of counters. Useful for making comparisons between groups of
-// similar statistics 
+// similar statistics
 type MultiCounter struct {
 	Name string
 	Counters map[string]*Counter
@@ -49,23 +49,22 @@ func (self *MultiCounter) Increment(counter string) {
 	c.Increment()
 }
 
-// Update is called to save the values of all counters into the results map. 
+// Update is called to save the values of all counters into the results map.
 // You can pass any map[string]Interface{} to store results including the provide Results
 // map on the main Metrics struct
-func (self *MultiCounter) Update(results *map[string]interface{}) error {
-	self.Lock()
-	defer self.Unlock()
-
-	res := *results
+func (self *MultiCounter) Update(mtx *sync.RWMutex, results map[string]interface{}) {
 
 	r := make(map[string]interface{})
 
+	self.RLock()
 	for _, counter := range self.Counters {
 		//r[name] = counter.t
-		counter.Update(&r)
+		r[counter.Name] = counter.t
 	}
+	self.RUnlock()
 
-	res[self.Name] = r
+	mtx.Lock()
+	defer mtx.Unlock()
 
-	return nil
+	results[self.Name] = r
 }
