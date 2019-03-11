@@ -37,10 +37,16 @@ func NewMetrics() Metrics {
 				Counters : map[string]*Counter{},
 			},
 		},
-		results: map[string]interface{}{},
+		results: &Results{
+			results: map[string]interface{}{},
+		},
 	}
 }
 
+type Results struct {
+	results map[string]interface{}
+	sync.RWMutex
+}
 
 // Metrics is the main object to instantiate when using the metrics package. One instance of
 // a Metrics object will contain all your timers and counters and results
@@ -48,20 +54,20 @@ type Metrics struct {
 	Timers map[string]*Timer
 	Counters map[string]*Counter
 	MultiCounters map[string]*MultiCounter
-	results map[string]interface{}
+	results *Results
 	sync.RWMutex
 }
 
 func (self *Metrics) MarshalResults() ([]byte, error) {
-	self.RLock()
-	defer self.RUnlock()
-	return json.Marshal(self.results)
+	self.results.RLock()
+	defer self.results.RUnlock()
+	return json.Marshal(self.results.results)
 }
 
 func (self *Metrics) SetResults(k string, v interface{}) {
-	self.Lock()
-	defer self.Unlock()
-	self.results[k] = v
+	self.results.Lock()
+	defer self.results.Unlock()
+	self.results.results[k] = v
 }
 
 func sum(vals ...uint64) uint64 {
