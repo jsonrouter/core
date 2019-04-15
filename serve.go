@@ -80,9 +80,11 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 		}
 
 		if n != nil {
+			/*
 			for k, v := range n.RequestParams {
 				req.SetParam(k, v)
 			}
+			*/
 			next = n
 			continue
 		}

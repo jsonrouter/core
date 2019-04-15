@@ -18,7 +18,7 @@ func NewNode(config *Config) *Node {
 		Headers: map[string]interface{}{},
 		Routes:	map[string]*Node{},
 		Methods: map[string]*Handler{},
-		RequestParams: map[string]interface{}{},
+//		RequestParams: map[string]interface{}{},
 		Modules: []*Module{},
 		Validations: []*validation.Config{},
 	}
@@ -30,7 +30,7 @@ type Node struct {
 	Path string
 	Parameter *Node
 	Headers map[string]interface{}
-	RequestParams map[string]interface{}
+//	RequestParams map[string]interface{}
 	Routes map[string]*Node
 	Methods map[string]*Handler
 	Module *Module
@@ -55,7 +55,7 @@ func (node *Node) Use(newNode *Node) {
 	node.Routes = newNode.Routes
 	node.Headers = newNode.Headers
 	node.Methods = newNode.Methods
-	node.RequestParams = newNode.RequestParams
+//	node.RequestParams = newNode.RequestParams
 	node.Modules = newNode.Modules
 	node.Validations = newNode.Validations
 }
@@ -112,6 +112,7 @@ func (node *Node) Add(path string, pathKeys ...string) *Node {
 		node.Routes[path] = n
 	node.Unlock()
 
+/*
 	if len(pathKeys) > 0 {
 		n.Lock()
 			for _, key := range pathKeys {
@@ -119,6 +120,7 @@ func (node *Node) Add(path string, pathKeys ...string) *Node {
 			}
 		n.Unlock()
 	}
+*/
 
 	return n
 }
