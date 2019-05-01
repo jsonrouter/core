@@ -27,27 +27,29 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 
 	met.Timers["requestTime"].Start()
 
-	defer func(){
+	if node.Config.UseMetrics {
+		defer func(){
 
-		if status == nil {
-			status = req.Respond(200, "OK")
-		} else {
-			status.Respond(req)
-		}
+			if status == nil {
+				status = req.Respond(200, "OK")
+			} else {
+				status.Respond(req)
+			}
 
-		met.MultiCounters["requestMethods"].Increment(req.Method())
-		met.MultiCounters["requestMethods"].Update(met.SetResults)
+			met.MultiCounters["requestMethods"].Increment(req.Method())
+			met.MultiCounters["requestMethods"].Update(met.SetResults)
 
-		met.MultiCounters["responseCodes"].Increment(strconv.Itoa(status.Code))
-		met.MultiCounters["responseCodes"].Update(met.SetResults)
+			met.MultiCounters["responseCodes"].Increment(strconv.Itoa(status.Code))
+			met.MultiCounters["responseCodes"].Update(met.SetResults)
 
-		met.Counters["requestCount"].Increment()
-		met.Counters["requestCount"].Update(met.SetResults)
+			met.Counters["requestCount"].Increment()
+			met.Counters["requestCount"].Update(met.SetResults)
 
-		met.Timers["requestTime"].Stop()
-		met.Timers["requestTime"].Update(met.SetResults)
+			met.Timers["requestTime"].Stop()
+			met.Timers["requestTime"].Update(met.SetResults)
 
-	}()
+		}()
+	}
 
 	// enforce https-only if required
 	if node.Config.ForcedTLS {

@@ -18,6 +18,7 @@ type Config struct {
 	CacheFiles bool
 	ForcedTLS bool
 	sync.RWMutex
+	UseMetrics bool
 	MetResults map[string]interface{}
 	Metrics metrics.Metrics
 }
@@ -35,6 +36,11 @@ func (config *Config) SpecV3() *openapiv3.Spec {
 // SpecHandler serves the raw spec to a HTTP request.
 func (config *Config) SpecHandler(req http.Request) *http.Status {
 	return req.Respond(config.Spec)
+}
+
+// MetricsHandler serves the raw metrics to a HTTP request.
+func (config *Config) RecordMetrics() {
+	config.UseMetrics = true
 }
 
 // MetricsHandler serves the raw metrics to a HTTP request.
