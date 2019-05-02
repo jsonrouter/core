@@ -23,12 +23,18 @@ type Headers map[string]string
 // MainHandler is the main handler function for incoming requests
 func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *http.Status) {
 
-	met := node.Config.Metrics
-
-	met.Timers["requestTime"].Start()
+	// enforce https-only if required
+	if node.Config.ForcedTLS {
+		if !req.IsTLS() {
+			status = req.Respond(502, "PLEASE UPGRADE TO HTTPS")
+			return
+		}
+	}
 
 	if node.Config.UseMetrics {
-		defer func(){
+		met := node.Config.Metrics
+		met.Timers["requestTime"].Start()
+		defer func() {
 
 			if status == nil {
 				status = req.Respond(200, "OK")
@@ -47,16 +53,17 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 
 			met.Timers["requestTime"].Stop()
 			met.Timers["requestTime"].Update(met.SetResults)
+		}()
+	} else {
+		defer func(){
+
+			if status == nil {
+				status = req.Respond(200, "OK")
+			} else {
+				status.Respond(req)
+			}
 
 		}()
-	}
-
-	// enforce https-only if required
-	if node.Config.ForcedTLS {
-		if !req.IsTLS() {
-			status = req.Respond(502, "PLEASE UPGRADE TO HTTPS")
-			return
-		}
 	}
 
 	switch fullPath {

@@ -27,6 +27,7 @@ func TestServer(t *testing.T, node *tree.Node) *common.TestHTTPStruct {
 		t.Fail()
 		return nil
 	}
+	service.Node.Config.RecordMetrics()
 
 	self := &common.TestHTTPStruct{
 		T: t,
