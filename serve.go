@@ -99,12 +99,12 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 		status = req.Respond(404, "NO CONTROLLER FOUND")
 		return
 	}
-/*
+
 	// set CORS headers
 	for k, v := range handler.Headers {
-		req.SetHeader(k, v)
+		req.SetResponseHeader(k, v.(string))
 	}
-*/
+
 	// return if preflight request
 	if req.Method() == "OPTIONS" {
 		status = req.Respond(200, "OK")
