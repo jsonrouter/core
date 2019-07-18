@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	
+
 	"time"
 	"testing"
 	"encoding/json"
@@ -14,7 +14,7 @@ import (
 	//"github.com/jsonrouter/core/metrics"
 	"github.com/jsonrouter/platforms/fasthttp"
 	"github.com/jsonrouter/logging/testing"
-	
+
 	fasthttptest "github.com/jsonrouter/core/tests/fasthttp"
 	standardtest "github.com/jsonrouter/core/tests/standard"
 	//appenginetest "github.com/jsonrouter/core/tests/appengine"
@@ -23,7 +23,7 @@ import (
 
 type App struct {
 	*common.TestHTTPStruct
-	
+
 }
 
 func (app *App) ApiGET(req http.Request) *http.Status {
@@ -46,7 +46,8 @@ func TestFastHttpMetrics(t *testing.T) {
 
 	// create routing structure
 	root, _ := jsonrouter.New(logs.NewClient().NewLogger("Server"), openapiv2.New("localhost", "test"))
-	
+	root.RecordMetrics()
+
 	endpoint := root.Add("/endpoint").Param(validation.Int(), "x")
 	endpoint.GET(app.ApiGET)
 	endpoint.POST(app.ApiPOST)
@@ -70,7 +71,7 @@ func TestFastHttpMetrics(t *testing.T) {
 
 				for x := 0; x < 1000; x+=1 {
 					resp, err := resty.R().Get(url)
-					
+
 					if err != nil || resp.StatusCode() == 500 {
 						t.Error(resp.String())
 						t.Fail()
@@ -80,7 +81,7 @@ func TestFastHttpMetrics(t *testing.T) {
 
 				for x := 0; x < 1000; x+=1 {
 					resp, err := resty.R().Post(url)
-					
+
 					if err != nil || resp.StatusCode() == 500 {
 						t.Error(resp.String())
 						t.Fail()

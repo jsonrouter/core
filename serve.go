@@ -23,38 +23,47 @@ type Headers map[string]string
 // MainHandler is the main handler function for incoming requests
 func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *http.Status) {
 
-	met := node.Config.Metrics
-
-	met.Timers["requestTime"].Start()
-
-	defer func(){
-
-		if status == nil {
-			status = req.Respond(200, "OK")
-		} else {
-			status.Respond(req)
-		}
-
-		met.MultiCounters["requestMethods"].Increment(req.Method())
-		met.MultiCounters["requestMethods"].Update(met.SetResults)
-
-		met.MultiCounters["responseCodes"].Increment(strconv.Itoa(status.Code))
-		met.MultiCounters["responseCodes"].Update(met.SetResults)
-
-		met.Counters["requestCount"].Increment()
-		met.Counters["requestCount"].Update(met.SetResults)
-
-		met.Timers["requestTime"].Stop()
-		met.Timers["requestTime"].Update(met.SetResults)
-
-	}()
-
 	// enforce https-only if required
 	if node.Config.ForcedTLS {
 		if !req.IsTLS() {
 			status = req.Respond(502, "PLEASE UPGRADE TO HTTPS")
 			return
 		}
+	}
+
+	if node.Config.UseMetrics {
+		met := node.Config.Metrics
+		met.Timers["requestTime"].Start()
+		defer func() {
+
+			if status == nil {
+				status = req.Respond(200, "OK")
+			} else {
+				status.Respond(req)
+			}
+
+			met.MultiCounters["requestMethods"].Increment(req.Method())
+			met.MultiCounters["requestMethods"].Update(met.SetResults)
+
+			met.MultiCounters["responseCodes"].Increment(strconv.Itoa(status.Code))
+			met.MultiCounters["responseCodes"].Update(met.SetResults)
+
+			met.Counters["requestCount"].Increment()
+			met.Counters["requestCount"].Update(met.SetResults)
+
+			met.Timers["requestTime"].Stop()
+			met.Timers["requestTime"].Update(met.SetResults)
+		}()
+	} else {
+		defer func(){
+
+			if status == nil {
+				status = req.Respond(200, "OK")
+			} else {
+				status.Respond(req)
+			}
+
+		}()
 	}
 
 	switch fullPath {
@@ -80,9 +89,11 @@ func MainHandler(req http.Request, node *tree.Node, fullPath string) (status *ht
 		}
 
 		if n != nil {
+			/*
 			for k, v := range n.RequestParams {
 				req.SetParam(k, v)
 			}
+			*/
 			next = n
 			continue
 		}

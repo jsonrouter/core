@@ -53,14 +53,17 @@ type Request interface {
 
 // Fail returns a standard 500 http error status
 func Fail() *Status {
-	return Respond(500, "UNEXPECTED APPLICATION ERROR")
+	status, _ := Respond(500, "UNEXPECTED APPLICATION ERROR")
+	return status
 }
 
 // Respond creates a Status object that can be served to the client.
-func Respond(args ...interface{}) *Status {
+func Respond(args ...interface{}) (status *Status, contentType string) {
+
+	contentType = "application/json"
 
 	var ok bool
-	s := &Status{
+	status = &Status{
 		Code: 200,
 	}
 
@@ -73,13 +76,13 @@ func Respond(args ...interface{}) *Status {
 			switch args[0].(type) {
 
 			case nil:
-				s.Value = args[0]
+				status.Value = args[0]
 			case string:
-				s.Value = args[0]
+				status.Value = args[0]
 			case []byte:
-				s.Value = args[0]
+				status.Value = args[0]
 			case [][]byte:
-				s.Value = args[0]
+				status.Value = args[0]
 
 			default:
 
@@ -88,16 +91,20 @@ func Respond(args ...interface{}) *Status {
 					return Respond(500, CONST_HTTP_STATUS_MSG_500)
 				}
 
-				s.Value = b
+				status.Value = b
 
 			}
 
-			return s
+			return
 
 		case 2, 3:
 
-			s.Code, ok = args[0].(int); if !ok {
-				return &Status{nil, 501, "Respond(...) METHOD HAS 2 ARGS; UNEXPECTED ARG 0 TYPE: " + reflect.TypeOf(args[0]).String()}
+			status.Code, ok = args[0].(int); if !ok {
+				return &Status{
+					nil,
+					501,
+					"Respond(...) METHOD HAS 2 ARGS; UNEXPECTED ARG 0 TYPE: " + reflect.TypeOf(args[0]).String(),
+				}, contentType
 			}
 
 			// argument 1 is now an interface, so we can handle errors
@@ -106,19 +113,19 @@ func Respond(args ...interface{}) *Status {
 				panic("2nd ARGUEMENT TO RESPOND IS NIL")
 			}
 
-			s.Message = args[1]
+			status.Message = args[1]
 
 			if l == 3 {
-				s.Value = args[2]
+				status.Value = args[2]
 			}
 
-			return s
+			return
 
 		default:
 
-			return &Status{nil, 400, "INVALID STATUS ARGS LENGTH: "+strconv.Itoa(len(args))}
+			return &Status{nil, 400, "INVALID STATUS ARGS LENGTH: "+strconv.Itoa(len(args))}, contentType
 
 	}
 
-	return nil // Unreachable code warning
+	return // Unreachable code warning
 }

@@ -23,6 +23,7 @@ func TestServer(t *testing.T, node *tree.Node) *common.TestHTTPStruct {
 	log := logs.NewClient().NewLogger()
 
 	root, service := jsonrouter.New(log, s)
+	root.Config.RecordMetrics()
 
 	self := &common.TestHTTPStruct{
 		T: t,

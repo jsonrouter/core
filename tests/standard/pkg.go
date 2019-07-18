@@ -28,6 +28,7 @@ func TestServer(t *testing.T, node *tree.Node) *common.TestHTTPStruct {
 		t.Fail()
 		return nil
 	}
+	service.Node.Config.RecordMetrics()
 
 	self := &common.TestHTTPStruct{
 		T: t,
@@ -39,7 +40,7 @@ func TestServer(t *testing.T, node *tree.Node) *common.TestHTTPStruct {
 	if node != nil {
 		service.Node.Use(node)
 	}
-	
+
 	go func() {
 		panic(
 			ht.ListenAndServe(

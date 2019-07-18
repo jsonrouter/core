@@ -240,7 +240,9 @@ func (ti *MockRequest) Fail() *Status {
 
 // Respond
 func (ti *MockRequest) Respond(args ...interface{}) *Status {
-	return Respond(args...)
+	status, contentType := Respond(args...)
+	ti.SetResponseHeader("Content-Type", contentType)
+	return status
 }
 
 // Log
